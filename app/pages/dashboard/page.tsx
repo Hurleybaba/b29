@@ -1,11 +1,18 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function FeedPage() {
   const [showNotification, setShowNotification] = useState(false);
   const [showLocationFilterMsg, setShowLocationFilterMsg] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [showNearbyResults, setShowNearbyResults] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [dots, setDots] = useState<Array<{ x: number; y: number; id: number }>>(
+    []
+  );
 
   // --- New Color Constants (from user update) ---
   const ORANGE = "#ff5720";
@@ -20,12 +27,70 @@ export default function FeedPage() {
 
   // Function to toggle location filter message
   const toggleLocationFilter = () => {
-    setShowLocationFilterMsg(true);
-    setTimeout(() => setShowLocationFilterMsg(false), 4000);
+    setIsLocationModalOpen(true);
+    setIsScanning(true);
+    setScanProgress(0);
+    setDots([]);
+    setShowLocationFilterMsg(false);
+
+    // Clear any existing interval
+    const intervals: NodeJS.Timeout[] = [];
+
+    // Generate random dots at intervals
+    const dotInterval = setInterval(() => {
+      if (scanProgress >= 100) {
+        clearInterval(dotInterval);
+        return;
+      }
+
+      // Add 1-3 random dots
+      const numDots = Math.floor(Math.random() * 3) + 1;
+      const newDots = Array.from({ length: numDots }, (_, i) => ({
+        id: Date.now() + i,
+        x: Math.random() * 200 - 100, // -100 to 100
+        y: Math.random() * 200 - 100, // -100 to 100
+      }));
+
+      setDots((prev) => [...prev, ...newDots].slice(-20)); // Keep only last 20 dots
+    }, 800);
+
+    intervals.push(dotInterval);
+
+    // Animate progress from 0 to 100 over 5 seconds
+    const progressInterval = setInterval(() => {
+      setScanProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          clearInterval(dotInterval);
+          intervals.forEach(clearInterval);
+          return 100;
+        }
+        return prev + 1;
+      });
+    }, 50); // 100 steps over 5 seconds = 0.05s per step
+
+    intervals.push(progressInterval);
+
+    // Start scanning for 5 seconds
+    setTimeout(() => {
+      setIsScanning(false);
+
+      // After showing results for 2 seconds, close modal and update feed
+      setTimeout(() => {
+        setIsLocationModalOpen(false);
+        setShowNearbyResults(true);
+        setDots([]);
+      }, 2000);
+    }, 5000);
+
+    // Cleanup function
+    return () => {
+      intervals.forEach(clearInterval);
+    };
   };
 
-  // Updated mock array with Pinterest-style varying heights and widths
-  const newPostItems = [
+  // Original mock array
+  const originalPostItems = [
     {
       id: 1,
       text: "Broken Glass",
@@ -168,6 +233,118 @@ export default function FeedPage() {
     },
   ];
 
+  // Filtered results based on location
+  const nearbyPostItems = [
+    {
+      id: 101,
+      text: "Nearby Cafe - 50m",
+      color: "bg-amber-100",
+      height: "h-64",
+      width: "w-full",
+      distance: "50m",
+    },
+    {
+      id: 102,
+      text: "Local Art Gallery - 120m",
+      color: "bg-purple-200",
+      height: "h-80",
+      width: "w-full",
+      distance: "120m",
+    },
+    {
+      id: 103,
+      text: "Tech Meetup - 200m",
+      color: "bg-blue-300",
+      height: "h-56",
+      width: "w-full",
+      distance: "200m",
+    },
+    {
+      id: 104,
+      text: "Fashion Pop-up - 80m",
+      color: "bg-pink-200",
+      height: "h-72",
+      width: "w-full",
+      distance: "80m",
+    },
+    {
+      id: 105,
+      text: "Food Truck - 150m",
+      color: "bg-orange-100",
+      height: "h-88",
+      width: "w-full",
+      distance: "150m",
+    },
+    {
+      id: 106,
+      text: "Book Store Event - 300m",
+      color: "bg-yellow-100",
+      height: "h-64",
+      width: "w-full",
+      distance: "300m",
+    },
+    {
+      id: 107,
+      text: "Yoga Studio - 250m",
+      color: "bg-green-100",
+      height: "h-96",
+      width: "w-full",
+      distance: "250m",
+    },
+    {
+      id: 108,
+      text: "Live Music - 180m",
+      color: "bg-red-100",
+      height: "h-60",
+      width: "w-full",
+      distance: "180m",
+    },
+    {
+      id: 109,
+      text: "Street Market - 400m",
+      color: "bg-teal-100",
+      height: "h-72",
+      width: "w-full",
+      distance: "400m",
+    },
+    {
+      id: 110,
+      text: "Photography Exhibit - 220m",
+      color: "bg-indigo-100",
+      height: "h-80",
+      width: "w-full",
+      distance: "220m",
+    },
+    {
+      id: 111,
+      text: "Coffee Shop Live - 90m",
+      color: "bg-amber-50",
+      height: "h-56",
+      width: "w-full",
+      distance: "90m",
+    },
+    {
+      id: 112,
+      text: "Park Cleanup Event - 350m",
+      color: "bg-emerald-100",
+      height: "h-64",
+      width: "w-full",
+      distance: "350m",
+    },
+  ];
+
+  // State to track which items to display
+  const [displayItems, setDisplayItems] = useState(originalPostItems);
+
+  // Update display items when showNearbyResults changes
+  useEffect(() => {
+    if (showNearbyResults) {
+      setDisplayItems(nearbyPostItems);
+    } else {
+      setDisplayItems(originalPostItems);
+    }
+  }, [showNearbyResults]);
+
   // Fixed SearchBar component with ORANGE color updates
   const SearchBar = () => (
     <div className="w-full">
@@ -257,6 +434,281 @@ export default function FeedPage() {
           </Link>
         </div>
       </nav>
+
+      {/* Location Scanning Modal */}
+      {isLocationModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/70 transition-opacity"
+            onClick={() => {
+              setIsLocationModalOpen(false);
+              setIsScanning(false);
+              setDots([]);
+            }}
+          ></div>
+
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 z-10">
+            <div className="text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-100 flex items-center justify-center">
+                  <svg
+                    className="w-8 h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    style={{ color: ORANGE }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    ></path>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  {isScanning ? "Scanning Nearby..." : "Results Found!"}
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  {isScanning
+                    ? "Searching for posts within 5km-10km radius..."
+                    : "Found nearby posts based on your location"}
+                </p>
+              </div>
+
+              {isScanning ? (
+                <>
+                  {/* Improved Radar Animation */}
+                  <div className="relative w-64 h-64 mx-auto mb-6">
+                    {/* Radar container */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {/* Circular grid lines */}
+                      <div className="absolute w-full h-full rounded-full border-2 border-gray-300 opacity-50"></div>
+                      <div className="absolute w-3/4 h-3/4 rounded-full border-2 border-gray-300 opacity-50"></div>
+                      <div className="absolute w-1/2 h-1/2 rounded-full border-2 border-gray-300 opacity-50"></div>
+                      <div className="absolute w-1/4 h-1/4 rounded-full border-2 border-gray-300 opacity-50"></div>
+
+                      {/* Cross lines */}
+                      <div className="absolute w-full h-px bg-gray-300 opacity-30"></div>
+                      <div className="absolute h-full w-px bg-gray-300 opacity-30"></div>
+
+                      {/* Rotating scanning beam */}
+                      {/* Rotating scanning beam */}
+                      <div
+                        className="absolute left-1/2 top-1/2 w-1 h-1/2"
+                        style={{
+                          transform: `translate(-50%, -100%) rotate(${
+                            scanProgress * 3.6
+                          }deg)`,
+                          transformOrigin: "50% 100%",
+                        }}
+                      >
+                        <div
+                          className="w-full h-full bg-gradient-to-t from-orange-400/80 to-transparent"
+                          style={{
+                            boxShadow: `0 0 12px 3px rgba(255, 87, 32, 0.5)`,
+                          }}
+                        ></div>
+                      </div>
+
+                      {/* Pulsing center circle */}
+                      <div
+                        className="absolute w-8 h-8 rounded-full animate-ping"
+                        style={{
+                          backgroundColor: ORANGE,
+                          opacity: 0.4,
+                        }}
+                      ></div>
+                      <div
+                        className="absolute w-6 h-6 rounded-full z-10"
+                        style={{ backgroundColor: ORANGE }}
+                      ></div>
+
+                      {/* Signal waves emanating from center */}
+                      {/* Signal waves emanating from center */}
+                      <div
+                        className="absolute rounded-full border border-orange-400 opacity-40 animate-ping"
+                        style={{
+                          width: "50%",
+                          height: "50%",
+                          animationDelay: "0s",
+                        }}
+                      ></div>
+
+                      <div
+                        className="absolute rounded-full border border-orange-400 opacity-30 animate-ping"
+                        style={{
+                          width: "40%",
+                          height: "40%",
+                          animationDelay: "0.5s",
+                        }}
+                      ></div>
+
+                      <div
+                        className="absolute rounded-full border border-orange-400 opacity-20 animate-ping"
+                        style={{
+                          width: "20%",
+                          height: "20%",
+                          animationDelay: "1s",
+                        }}
+                      ></div>
+
+                      {/* Random dots representing detected signals */}
+                      {dots.map((dot, index) => {
+                        // Calculate if dot is within radar range (within 100 units)
+                        const distance = Math.sqrt(
+                          dot.x * dot.x + dot.y * dot.y
+                        );
+                        if (distance > 120) return null;
+
+                        return (
+                          <div
+                            key={dot.id}
+                            className="absolute w-3 h-3 rounded-full bg-orange-500 transform -translate-x-1/2 -translate-y-1/2 animate-fade-in"
+                            style={{
+                              left: `calc(50% + ${dot.x}px)`,
+                              top: `calc(50% + ${dot.y}px)`,
+                              zIndex: 20,
+                              boxShadow: `0 0 8px 2px rgba(255, 87, 32, 0.7)`,
+                              animationDelay: `${index * 0.1}s`,
+                            }}
+                          ></div>
+                        );
+                      })}
+
+                      {/* Static UI dots at the edges */}
+                      <div className="absolute top-0 left-1/2 w-2 h-2 bg-orange-500 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                      <div className="absolute right-0 top-1/2 w-2 h-2 bg-orange-500 rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
+                      <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-orange-500 rounded-full transform -translate-x-1/2 translate-y-1/2"></div>
+                      <div className="absolute left-0 top-1/2 w-2 h-2 bg-orange-500 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <div className="flex justify-between text-sm text-gray-600 mb-1">
+                      <span>Scanning radius: 5km</span>
+                      <span>{scanProgress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="h-2 rounded-full transition-all duration-100"
+                        style={{
+                          width: `${scanProgress}%`,
+                          backgroundColor: ORANGE,
+                          backgroundImage: `linear-gradient(90deg, ${ORANGE}, #ff8a65)`,
+                        }}
+                      ></div>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-4">
+                      Detecting {dots.length} nearby locations...
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="mb-6">
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center animate-bounce">
+                      <svg
+                        className="w-10 h-10"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        style={{ color: "#10B981" }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 13l4 4L19 7"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p className="text-lg font-medium text-gray-900">
+                      Found {nearbyPostItems.length} nearby posts!
+                    </p>
+                    <p className="text-gray-600 mt-2">
+                      The feed has been updated with location-based results.
+                    </p>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-4 mb-6">
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      Filter Applied:
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      5km-10km radius around your location
+                    </p>
+                  </div>
+                </>
+              )}
+
+              <button
+                onClick={() => {
+                  setIsLocationModalOpen(false);
+                  setIsScanning(false);
+                  setDots([]);
+                }}
+                className="mt-6 w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg transition"
+              >
+                {isScanning ? "Cancel Scan" : "Close"}
+              </button>
+            </div>
+
+            {/* Add CSS for animations */}
+            <style jsx>{`
+              @keyframes fadeIn {
+                from {
+                  opacity: 0;
+                }
+                to {
+                  opacity: 1;
+                }
+              }
+
+              .animate-fade-in {
+                animation: fadeIn 0.5s ease-in;
+              }
+
+              @keyframes ping {
+                0% {
+                  transform: scale(0.8);
+                  opacity: 0.8;
+                }
+                80%,
+                100% {
+                  transform: scale(2.5);
+                  opacity: 0;
+                }
+              }
+
+              .animate-ping {
+                animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+              }
+
+              @keyframes pulse {
+                0%,
+                100% {
+                  opacity: 0.1;
+                }
+                50% {
+                  opacity: 0.3;
+                }
+              }
+
+              .animate-pulse {
+                animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+              }
+            `}</style>
+          </div>
+        </div>
+      )}
 
       {/* MOBILE SIDEBAR DRAWER (Kept for mobile navigation) */}
       {isMobileMenuOpen && (
@@ -373,16 +825,54 @@ export default function FeedPage() {
             <SearchBar />
           </div>
 
-          <h2
-            className="text-xl font-bold text-gray-900 mb-6 pl-4 lg:pl-0 pt-4"
-            style={{ color: BLACK }}
-          >
-            Discover & Trending
-          </h2>
+          <div className="flex items-center justify-between mb-6 pl-4 lg:pl-0 pt-4">
+            <h2
+              className="text-xl font-bold text-gray-900 flex items-center gap-2"
+              style={{ color: BLACK }}
+            >
+              {showNearbyResults ? (
+                <>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    style={{ color: ORANGE }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    ></path>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                  </svg>
+                  Near Me • 5km radius
+                </>
+              ) : (
+                "Discover & Trending"
+              )}
+            </h2>
+
+            {showNearbyResults && (
+              <button
+                onClick={() => setShowNearbyResults(false)}
+                className="text-sm px-3 py-1 rounded-full hover:bg-gray-100 transition"
+                style={{ color: ORANGE }}
+              >
+                Show All Posts
+              </button>
+            )}
+          </div>
 
           {/* MASONRY GRID IMPLEMENTATION */}
           <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 px-4 lg:px-0">
-            {newPostItems.map((item) => (
+            {displayItems.map((item) => (
               <div
                 key={item.id}
                 className={`relative w-full rounded-xl overflow-hidden shadow-lg cursor-pointer group mb-4 break-inside-avoid ${item.height}`}
@@ -391,27 +881,43 @@ export default function FeedPage() {
                 <div
                   className={`w-full h-full flex items-center justify-center ${item.color}`}
                 >
-                  <p
-                    className="text-white font-semibold text-center text-sm p-4 opacity-70 group-hover:opacity-100 transition-opacity"
-                    style={{
-                      color: [
-                        "bg-white",
-                        "bg-pink-100",
-                        "bg-yellow-100",
-                        "bg-orange-200",
-                        "bg-green-100",
-                        "bg-blue-200",
-                        "bg-gray-100",
-                        "bg-amber-100",
-                        "bg-purple-300",
-                        "bg-gray-300",
-                      ].includes(item.color)
-                        ? BLACK
-                        : WHITE,
-                    }}
-                  >
-                    {item.text}
-                  </p>
+                  <div className="text-center p-4 w-full">
+                    <p
+                      className="text-white font-semibold text-sm opacity-70 group-hover:opacity-100 transition-opacity mb-2 px-2"
+                      style={{
+                        color: [
+                          "bg-white",
+                          "bg-pink-100",
+                          "bg-pink-200",
+                          "bg-yellow-100",
+                          "bg-orange-200",
+                          "bg-orange-100",
+                          "bg-green-100",
+                          "bg-blue-200",
+                          "bg-blue-300",
+                          "bg-gray-100",
+                          "bg-amber-100",
+                          "bg-amber-50",
+                          "bg-purple-300",
+                          "bg-purple-200",
+                          "bg-gray-300",
+                          "bg-red-100",
+                          "bg-teal-100",
+                          "bg-indigo-100",
+                          "bg-emerald-100",
+                        ].includes(item.color)
+                          ? BLACK
+                          : WHITE,
+                      }}
+                    >
+                      {item.text}
+                    </p>
+                    {item.distance && (
+                      <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                        {item.distance} away
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Save Button Mock - Updated Color */}
