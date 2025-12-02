@@ -53,21 +53,21 @@ export default function SubscriptionPage() {
               $29 <span className="text-base xs:text-lg sm:text-lg text-black">/month</span>
             </p>
             
-            <ul className="mt-4 xs:mt-6 sm:mt-8 space-y-2 xs:space-y-3 sm:space-y-4 flex-grow">
+            <ul className="mt-4 xs:mt-6 sm:mt-8 space-y-2 xs:space-y-3 sm:space-y-4 grow">
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">5 Business Listings</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">Basic Analytics</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">Email Support</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">24/7 Visibility</span>
               </li>
             </ul>
@@ -78,7 +78,7 @@ export default function SubscriptionPage() {
           </div>
 
           {/* Professional Plan (Recommended) */}
-          <div className="bg-white rounded-lg xs:rounded-xl shadow-md sm:shadow-2xl border-2 border-orange-600 p-4 xs:p-6 sm:p-8 relative sm:col-span-2 lg:col-span-1 lg:transform lg:scale-100 z-10 flex flex-col sm:-translate-y-2 lg:-translate-y-0">
+          <div className="bg-white rounded-lg xs:rounded-xl shadow-md sm:shadow-2xl border-2 border-orange-600 p-4 xs:p-6 sm:p-8 relative sm:col-span-2 lg:col-span-1 lg:transform lg:scale-100 z-10 flex flex-col sm:-translate-y-2 lg:translate-y-0">
             <div className="absolute top-0 right-0 bg-orange-600 text-white text-xs font-bold px-2 xs:px-3 sm:px-4 py-1 rounded-bl-lg rounded-tr-lg xs:rounded-tr-xl whitespace-nowrap">
               Currently Plan
             </div>
@@ -89,25 +89,25 @@ export default function SubscriptionPage() {
               $79 <span className="text-base xs:text-lg sm:text-lg text-black">/month</span>
             </p>
             
-            <ul className="mt-4 xs:mt-6 sm:mt-8 space-y-2 xs:space-y-3 sm:space-y-4 flex-grow">
+            <ul className="mt-4 xs:mt-6 sm:mt-8 space-y-2 xs:space-y-3 sm:space-y-4 grow">
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">20 Business Listings</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">Advanced Analytics</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">Priority Support</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">Custom Branding</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">API Access</span>
               </li>
             </ul>
@@ -126,29 +126,29 @@ export default function SubscriptionPage() {
               $199 <span className="text-base xs:text-lg sm:text-lg text-black">/month</span>
             </p>
             
-            <ul className="mt-4 xs:mt-6 sm:mt-8 space-y-2 xs:space-y-3 sm:space-y-4 flex-grow">
+            <ul className="mt-4 xs:mt-6 sm:mt-8 space-y-2 xs:space-y-3 sm:space-y-4 grow">
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">Unlimited Listings</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">Premium Analytics</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">24/7 Dedicated Support</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">White Label</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">Advanced API</span>
               </li>
               <li className="flex items-start gap-2 xs:gap-2.5 sm:gap-3">
-                <span className="text-orange-600 font-bold text-lg flex-shrink-0 pt-0.5">●</span>
+                <span className="text-orange-600 font-bold text-lg shrink-0 pt-0.5">●</span>
                 <span className="text-black text-sm xs:text-base sm:text-base">Custom Integration</span>
               </li>
             </ul>
