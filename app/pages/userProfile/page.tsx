@@ -1,9 +1,25 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function UserProfile() {
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const router = useRouter();
+
+  const handleUpgradeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowUpgradeModal(true);
+  };
+
+  const handleModalConfirm = () => {
+    setShowUpgradeModal(false);
+    router.push("/pages/businessDashboard");
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-12">
+    <div className="min-h-screen bg-gray-50 pb-12 relative">
       {/* Navbar Placeholder */}
       <nav className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto flex justify-between items-center">
@@ -71,12 +87,12 @@ export default function UserProfile() {
               <p className="text-orange-100 text-sm mb-4">
                 Unlock event hosting, analytics, and business tools.
               </p>
-              <Link
-                href="/pages/subscription"
+              <button
+                onClick={handleUpgradeClick}
                 className="block w-full py-2 bg-white text-[#ff5720] rounded-lg font-semibold hover:bg-orange-50 transition shadow-sm"
               >
                 Upgrade Now
-              </Link>
+              </button>
             </div>
 
             {/* Business Dashboard Access (Visible after upgrade) */}
@@ -244,6 +260,34 @@ export default function UserProfile() {
           </div>
         </div>
       </div>
+
+      {/* SUCCESS MODAL */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center transform transition-all scale-100">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg 
+                className="w-10 h-10 text-green-500 animate-bounce" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Upgraded!</h2>
+            <p className="text-gray-600 mb-8">
+              Welcome to Business. You now have access to all professional features.
+            </p>
+            <button
+              onClick={handleModalConfirm}
+              className="w-full bg-[#ff5720] hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-xl transition transform hover:scale-[1.02] active:scale-95"
+            >
+              OK, Let's Go!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
