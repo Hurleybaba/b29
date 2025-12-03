@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { 
   LineChart, 
   Line, 
@@ -79,6 +79,52 @@ interface CustomTooltipProps {
   payload?: TooltipPayloadItem[];
   label?: string;
 }
+
+// Animation wrapper component
+const AnimatedChart = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            setIsVisible(true);
+          }, delay);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '50px'
+      }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, [delay]);
+
+  return (
+    <div 
+      ref={ref}
+      className={`transition-all duration-1000 ease-out ${
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-10'
+      }`}
+    >
+      {children}
+    </div>
+  );
+};
 
 export default function BusinessAnalysis() {
   const [isOpen, setIsOpen] = useState(false);
@@ -360,192 +406,210 @@ export default function BusinessAnalysis() {
           ))}
         </div>
 
-        {/* Stats Overview */}
+        {/* Stats Overview - Add animation to stats too */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {summaryStats.map((stat, index) => (
-            <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm text-gray-500">{stat.title}</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                  <div className={`flex items-center gap-1 mt-2 text-sm ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                    <span>{stat.trend === 'up' ? '↑' : '↓'}</span>
-                    <span>{stat.change}</span>
-                    <span>from last period</span>
+            <AnimatedChart key={index} delay={index * 100}>
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500">{stat.title}</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                    <div className={`flex items-center gap-1 mt-2 text-sm ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                      <span>{stat.trend === 'up' ? '↑' : '↓'}</span>
+                      <span>{stat.change}</span>
+                      <span>from last period</span>
+                    </div>
                   </div>
+                  <div className="text-2xl">{stat.icon}</div>
                 </div>
-                <div className="text-2xl">{stat.icon}</div>
               </div>
-            </div>
+            </AnimatedChart>
           ))}
         </div>
 
-        {/* Charts Grid */}
+        {/* Charts Grid with staggered animations */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Event Performance Chart */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-6">Event Performance Trends</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={eventPerformanceData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="name" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <RechartsTooltip content={<CustomTooltip />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="signups" 
-                  stroke="#1453A0" 
-                  fill="#1453A0" 
-                  fillOpacity={0.1}
-                  name="Signups"
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="revenue" 
-                  stroke="#ff5720" 
-                  fill="#ff5720" 
-                  fillOpacity={0.1}
-                  name="Revenue ($)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          <AnimatedChart delay={100}>
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="font-bold text-gray-900 mb-6">Event Performance Trends</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={eventPerformanceData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="name" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
+                  <RechartsTooltip content={<CustomTooltip />} />
+                  <Area 
+                    type="monotone" 
+                    dataKey="signups" 
+                    stroke="#1453A0" 
+                    fill="#1453A0" 
+                    fillOpacity={0.1}
+                    name="Signups"
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#ff5720" 
+                    fill="#ff5720" 
+                    fillOpacity={0.1}
+                    name="Revenue ($)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </AnimatedChart>
 
           {/* Event Types Distribution */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-6">Event Types Distribution</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={eventTypeData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={renderCustomizedLabel}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {eventTypeData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <RechartsTooltip 
-                  formatter={(value, name) => [`${value}%`, name]}
-                />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <AnimatedChart delay={200}>
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="font-bold text-gray-900 mb-6">Event Types Distribution</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={eventTypeData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={renderCustomizedLabel}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {eventTypeData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    formatter={(value, name) => [`${value}%`, name]}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </AnimatedChart>
 
           {/* Audience Demographics */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-6">Audience Age Distribution</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={audienceData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="age" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <RechartsTooltip />
-                <Bar dataKey="count" fill="#ff5720" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <AnimatedChart delay={300}>
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="font-bold text-gray-900 mb-6">Audience Age Distribution</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={audienceData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="age" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
+                  <RechartsTooltip />
+                  <Bar dataKey="count" fill="#ff5720" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </AnimatedChart>
 
           {/* Conversion Funnel */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-6">Conversion Funnel</h3>
-            <div className="space-y-4">
-              {conversionData.map((stage, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium text-gray-700">{stage.stage}</span>
-                    <span className="text-gray-600">{stage.count} ({stage.conversion}%)</span>
+          <AnimatedChart delay={400}>
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="font-bold text-gray-900 mb-6">Conversion Funnel</h3>
+              <div className="space-y-4">
+                {conversionData.map((stage, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium text-gray-700">{stage.stage}</span>
+                      <span className="text-gray-600">{stage.count} ({stage.conversion}%)</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-[#ff5720] h-2 rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: `${stage.conversion}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-[#ff5720] h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${stage.conversion}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          </AnimatedChart>
 
           {/* Time Performance */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-6">Time-based Performance</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={timePerformanceData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="time" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <RechartsTooltip />
-                <Bar dataKey="events" fill="#1453A0" name="Events" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="attendance" fill="#ff8a50" name="Avg. Attendance %" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <AnimatedChart delay={500}>
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="font-bold text-gray-900 mb-6">Time-based Performance</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={timePerformanceData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="time" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
+                  <RechartsTooltip />
+                  <Bar dataKey="events" fill="#1453A0" name="Events" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="attendance" fill="#ff8a50" name="Avg. Attendance %" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </AnimatedChart>
 
           {/* Geographic Interest */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-6">Geographic Interest Levels</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={geographyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="area" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <RechartsTooltip />
-                <Bar dataKey="events" fill="#1f1f1f" name="Events Held" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="interest" fill="#10b981" name="Interest Score" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <AnimatedChart delay={600}>
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+              <h3 className="font-bold text-gray-900 mb-6">Geographic Interest Levels</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={geographyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="area" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
+                  <RechartsTooltip />
+                  <Bar dataKey="events" fill="#1f1f1f" name="Events Held" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="interest" fill="#10b981" name="Interest Score" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </AnimatedChart>
         </div>
 
         {/* Recommendations Section */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-          <h3 className="font-bold text-gray-900 mb-4">Insights & Recommendations</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <h4 className="font-semibold text-[#1453A0] mb-2">📈 Top Performing</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Evening events have 15% higher attendance</li>
-                <li>• Open House events generate 45% of all leads</li>
-                <li>• Suburbs show highest growth potential</li>
-              </ul>
-            </div>
-            <div className="p-4 bg-orange-50 rounded-lg">
-              <h4 className="font-semibold text-[#ff5720] mb-2">🎯 Opportunities</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Increase social media promotion by 30%</li>
-                <li>• Target 25-34 age group more effectively</li>
-                <li>• Expand weekend event offerings</li>
-              </ul>
+        <AnimatedChart delay={700}>
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+            <h3 className="font-bold text-gray-900 mb-4">Insights & Recommendations</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold text-[#1453A0] mb-2">📈 Top Performing</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Evening events have 15% higher attendance</li>
+                  <li>• Open House events generate 45% of all leads</li>
+                  <li>• Suburbs show highest growth potential</li>
+                </ul>
+              </div>
+              <div className="p-4 bg-orange-50 rounded-lg">
+                <h4 className="font-semibold text-[#ff5720] mb-2">🎯 Opportunities</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Increase social media promotion by 30%</li>
+                  <li>• Target 25-34 age group more effectively</li>
+                  <li>• Expand weekend event offerings</li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
+        </AnimatedChart>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-[#f1f1f1] p-4 rounded-lg">
-            <p className="text-sm text-gray-600">Best Day</p>
-            <p className="text-lg font-bold text-[#1f1f1f]">Saturday</p>
+        <AnimatedChart delay={800}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-[#f1f1f1] p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Best Day</p>
+              <p className="text-lg font-bold text-[#1f1f1f]">Saturday</p>
+            </div>
+            <div className="bg-[#f1f1f1] p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Peak Time</p>
+              <p className="text-lg font-bold text-[#1f1f1f]">6-8 PM</p>
+            </div>
+            <div className="bg-[#f1f1f1] p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Avg. Cost/Lead</p>
+              <p className="text-lg font-bold text-[#1f1f1f]">$42</p>
+            </div>
+            <div className="bg-[#f1f1f1] p-4 rounded-lg">
+              <p className="text-sm text-gray-600">ROI</p>
+              <p className="text-lg font-bold text-[#1f1f1f]">3.2x</p>
+            </div>
           </div>
-          <div className="bg-[#f1f1f1] p-4 rounded-lg">
-            <p className="text-sm text-gray-600">Peak Time</p>
-            <p className="text-lg font-bold text-[#1f1f1f]">6-8 PM</p>
-          </div>
-          <div className="bg-[#f1f1f1] p-4 rounded-lg">
-            <p className="text-sm text-gray-600">Avg. Cost/Lead</p>
-            <p className="text-lg font-bold text-[#1f1f1f]">$42</p>
-          </div>
-          <div className="bg-[#f1f1f1] p-4 rounded-lg">
-            <p className="text-sm text-gray-600">ROI</p>
-            <p className="text-lg font-bold text-[#1f1f1f]">3.2x</p>
-          </div>
-        </div>
+        </AnimatedChart>
       </main>
     </div>
   );
