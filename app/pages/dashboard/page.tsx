@@ -50,6 +50,7 @@ const AnimatedItem = ({ children, delay = 0 }: { children: React.ReactNode; dela
 
 export default function FeedPage() {
   const [showNotification, setShowNotification] = useState(false);
+  const [notificationProgress, setNotificationProgress] = useState(100);
   const [showLocationFilterMsg, setShowLocationFilterMsg] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
@@ -71,9 +72,27 @@ export default function FeedPage() {
 
   // Function to simulate walking near a business
   const simulateProximity = () => {
+    setNotificationProgress(100);
     setShowNotification(true);
-    setTimeout(() => setShowNotification(false), 5000); // Hide after 5 seconds
   };
+
+  // Timer logic for notification
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (showNotification) {
+      interval = setInterval(() => {
+        setNotificationProgress((prev) => {
+          if (prev <= 0) {
+            clearInterval(interval);
+            setShowNotification(false);
+            return 0;
+          }
+          return prev - 1; // Decrement to simulate timer (approx 5s total with 50ms interval)
+        });
+      }, 50);
+    }
+    return () => clearInterval(interval);
+  }, [showNotification]);
 
   // Function to toggle location filter message
   const toggleLocationFilter = () => {
@@ -1338,72 +1357,48 @@ export default function FeedPage() {
         </button>
       </div>
 
-      {/* NOTIFICATION TOAST (Nearby Alert) - Updated Color */}
+      {/* NOTIFICATION TOAST (Horizontal Bar) - Updated Design */}
       {showNotification && (
-        <div
-          className="fixed bottom-24 right-8 bg-white border-l-4 shadow-2xl rounded-lg p-4 max-w-sm animate-bounce z-50"
-          style={{ borderColor: ORANGE }}
-        >
-          <div className="flex items-start">
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-[90%] max-w-2xl bg-white rounded-lg shadow-2xl z-50 overflow-hidden flex flex-col border border-gray-100 animate-fade-in-up">
+          <div className="flex items-center p-4 gap-4">
+            {/* Icon */}
             <div className="flex-shrink-0">
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                style={{ color: ORANGE }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-            </div>
-            <div className="ml-3 w-0 flex-1 pt-0.5">
-              <p className="text-sm font-bold text-gray-900">You're nearby!</p>
-              <p className="text-sm text-gray-500 mt-1">
-                <span className="font-semibold" style={{ color: ORANGE }}>
-                  Nexus Properties
-                </span>{" "}
-                is 50m away. Check out their open house event happening now!
-              </p>
-              <div className="mt-2 flex">
-                <Link
-                  href="/pages/eventDetails"
-                  className="text-xs font-medium hover:text-orange-800"
-                  style={{ color: ORANGE }}
-                >
-                  View Event Details &rarr;
-                </Link>
+              <div className="p-2 bg-orange-50 rounded-full">
+                <svg className="w-6 h-6 text-[#ff5720]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
               </div>
             </div>
-            <div className="ml-4 flex-shrink-0 flex">
-              <button
-                onClick={() => setShowNotification(false)}
-                className="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none"
-              >
-                <span className="sr-only">Close</span>
-                <svg
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
+            
+            {/* Content - Horizontal Layout */}
+            <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+               <div className="text-sm truncate">
+                 <span className="font-bold text-gray-900 block sm:inline mr-2">You're nearby!</span>
+                 <span className="text-gray-600">
+                   <span className="font-bold text-[#ff5720]">Nexus Properties</span> is 50m away.
+                 </span>
+               </div>
+               
+               <Link href="/pages/eventDetails" className="text-sm font-bold text-[#ff5720] hover:text-orange-700 whitespace-nowrap flex-shrink-0">
+                 View Details &rarr;
+               </Link>
             </div>
+
+            {/* Close */}
+            <button onClick={() => setShowNotification(false)} className="text-gray-400 hover:text-gray-500">
+               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+               </svg>
+            </button>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="h-1 w-full bg-orange-100">
+            <div 
+              className="h-full bg-[#ff5720] transition-all duration-100 ease-linear" 
+              style={{ width: `${notificationProgress}%` }}
+            />
           </div>
         </div>
       )}
