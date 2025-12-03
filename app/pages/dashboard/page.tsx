@@ -2,8 +2,59 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 
+// --- Smart Video Component ---
+// Handles the 5-second loop vs full play on hover logic
+const SmartVideo = ({
+  src,
+  className,
+}: {
+  src: string;
+  className?: string;
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleTimeUpdate = () => {
+      // If NOT hovering and we pass 5 seconds, reset to 0
+      if (!isHovered && video.currentTime >= 5) {
+        video.currentTime = 0;
+        video.play();
+      }
+    };
+
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    return () => {
+      video.removeEventListener("timeupdate", handleTimeUpdate);
+    };
+  }, [isHovered]);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      className={className}
+      muted
+      autoPlay
+      loop={isHovered} // Only loop the full video if hovering (otherwise we manually loop at 5s)
+      playsInline
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    />
+  );
+};
+
 // --- Animation Component ---
-const AnimatedItem = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => {
+const AnimatedItem = ({
+  children,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+}) => {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -19,7 +70,7 @@ const AnimatedItem = ({ children, delay = 0 }: { children: React.ReactNode; dela
       },
       {
         threshold: 0.1,
-        rootMargin: '50px'
+        rootMargin: "50px",
       }
     );
 
@@ -35,12 +86,10 @@ const AnimatedItem = ({ children, delay = 0 }: { children: React.ReactNode; dela
   }, [delay]);
 
   return (
-    <div 
+    <div
       ref={ref}
       className={`transition-all duration-700 ease-out transform ${
-        isVisible 
-          ? 'opacity-100 translate-y-0' 
-          : 'opacity-0 translate-y-10'
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
       {children}
@@ -68,7 +117,7 @@ export default function FeedPage() {
   // --- Theme Constants ---
   const ORANGE = "#ff5720";
   const BLACK = "#1f1f1f";
-  const WHITE = "#f1f1f1"; 
+  const WHITE = "#f1f1f1";
 
   // Function to simulate walking near a business
   const simulateProximity = () => {
@@ -158,167 +207,134 @@ export default function FeedPage() {
     };
   };
 
-  // Original mock array
+  // --- MOCK DATA WITH MEDIA ---
+  // Ensure you have these files in public/media/ or update paths
   const originalPostItems = [
     {
       id: 1,
-      text: "Broken Glass",
-      color: "bg-black",
+      text: "Urban Vibes",
+      type: "video",
+      src: "/media/b5d706d365ed3436ba27651e382e87b5_1764753320504.mp4",
       height: "h-80",
       width: "w-full",
-      timeLeft: "2h 30m", // Added time left for timer
+      timeLeft: "2h 30m",
     },
     {
       id: 2,
-      text: "Cat w/ Flower Crown",
-      color: "bg-pink-100",
+      text: "Summer Collection",
+      type: "image",
+      src: "/media/3a1e795cae4f9bd335450403bff9d6bd.png",
       height: "h-48",
       width: "w-full",
       timeLeft: "1d 5h",
     },
     {
       id: 3,
-      text: "Hand Gesture",
-      color: "bg-orange-200",
+      text: "Tech Unboxing",
+      type: "video",
+      src: "/media/4f84bf265315d88bdddb03db5e85fef0_1764753202715.mp4",
       height: "h-64",
       width: "w-full",
       timeLeft: "45m",
     },
     {
       id: 4,
-      text: "Yellow Funny Face",
-      color: "bg-yellow-100",
+      text: "Artistic Process",
+      type: "video",
+      src: "/media/eabff569a9bd0afa3bd2959f995f56ca_1764753406900.mp4",
       height: "h-96",
       width: "w-full",
       timeLeft: "3h 15m",
     },
     {
       id: 5,
-      text: "Doraemon with eyes closed",
-      color: "bg-white",
+      text: "Morning Coffee",
+      type: "image",
+      src: "/media/7066c5a623d29c220d0b131a9b9e5fa4.png",
       height: "h-56",
       width: "w-full",
       timeLeft: "6h",
     },
     {
       id: 6,
-      text: "Green Abstract Pattern",
-      color: "bg-green-100",
+      text: "Nature Walk",
+      type: "video",
+      src: "/media/59522b476d4e635cd1151d714d4712e6_1764753388870.mp4",
       height: "h-72",
       width: "w-full",
       timeLeft: "12h 30m",
     },
     {
       id: 7,
-      text: "Anime Action Scene",
-      color: "bg-gray-800",
+      text: "Skate Park Tricks",
+      type: "video",
+      src: "/media/051d0c0fc208f8ec05da017a20ce78f6_1764749704694.mp4",
       height: "h-80",
       width: "w-full",
       timeLeft: "1d",
     },
     {
       id: 8,
-      text: "Cat with Attitude",
-      color: "bg-white",
+      text: "Interior Design",
+      type: "image",
+      src: "/media/48829418a0a6222084d050efd4fe9175.png",
       height: "h-64",
       width: "w-full",
       timeLeft: "4h",
     },
     {
       id: 9,
-      text: "Abstract Glitch",
-      color: "bg-black",
+      text: "Concert Highlights",
+      type: "video",
+      src: "/media/9c15daa7ebf874a293d07c9b98398c52_1764749604790.mp4",
       height: "h-96",
       width: "w-full",
       timeLeft: "8h 45m",
     },
     {
       id: 10,
-      text: "Spotlight on an Idea",
-      color: "bg-gray-700",
+      text: "Product Reveal",
+      type: "image",
+      src: "public/media/efde2a88bc61b30a9dfe5cca7d3da070.png",
       height: "h-60",
       width: "w-full",
       timeLeft: "2d",
     },
     {
       id: 11,
-      text: "Text Banner",
-      color: "bg-red-900",
+      text: "Street Food",
+      type: "video",
+      src: "/media/043d516ddba1573be29ea9bedb0b313f_1764749576340.mp4", // Recycling for demo
       height: "h-48",
       width: "w-full",
       timeLeft: "1h 30m",
     },
     {
       id: 12,
-      text: "Smiling Hamster",
-      color: "bg-orange-100",
+      text: "Pet Moments",
+      type: "image",
+      src: "/media/7066c5a623d29c220d0b131a9b9e5fa4.png",
       height: "h-72",
       width: "w-full",
       timeLeft: "5h",
     },
     {
       id: 13,
-      text: "Luxury Villa",
-      color: "bg-blue-200",
+      text: "Luxury Villa Tour",
+      type: "video",
+      src: "/media/043d516ddba1573be29ea9bedb0b313f_1764749576340.mp4",
       height: "h-80",
       width: "w-full",
       timeLeft: "1d 3h",
     },
     {
       id: 14,
-      text: "Modern Architecture",
-      color: "bg-white",
+      text: "Architecture",
+      type: "image",
+      src: "/media/3a1e795cae4f9bd335450403bff9d6bd.png",
       height: "h-64",
       width: "w-full",
       timeLeft: "9h 20m",
-    },
-    {
-      id: 15,
-      text: "Doraemon Sad",
-      color: "bg-gray-100",
-      height: "h-40",
-      width: "w-full",
-      timeLeft: "7h",
-    },
-    {
-      id: 16,
-      text: "Forest Path",
-      color: "bg-green-700",
-      height: "h-96",
-      width: "w-full",
-      timeLeft: "2d 4h",
-    },
-    {
-      id: 17,
-      text: "Minimal Design",
-      color: "bg-gray-300",
-      height: "h-52",
-      width: "w-full",
-      timeLeft: "3h 45m",
-    },
-    {
-      id: 18,
-      text: "Vibrant Colors",
-      color: "bg-purple-300",
-      height: "h-88",
-      width: "w-full",
-      timeLeft: "14h",
-    },
-    {
-      id: 19,
-      text: "Urban Street",
-      color: "bg-gray-600",
-      height: "h-64",
-      width: "w-full",
-      timeLeft: "1d 8h",
-    },
-    {
-      id: 20,
-      text: "Coffee Art",
-      color: "bg-amber-100",
-      height: "h-76",
-      width: "w-full",
-      timeLeft: "6h 30m",
     },
   ];
 
@@ -327,7 +343,8 @@ export default function FeedPage() {
     {
       id: 101,
       text: "Nearby Cafe - 50m",
-      color: "bg-amber-100",
+      type: "video",
+      src: "/media/video3.mp4",
       height: "h-64",
       width: "w-full",
       distance: "50m",
@@ -335,8 +352,9 @@ export default function FeedPage() {
     },
     {
       id: 102,
-      text: "Local Art Gallery - 120m",
-      color: "bg-purple-200",
+      text: "Local Art Gallery",
+      type: "image",
+      src: "/media/image1.jpg",
       height: "h-80",
       width: "w-full",
       distance: "120m",
@@ -344,8 +362,9 @@ export default function FeedPage() {
     },
     {
       id: 103,
-      text: "Tech Meetup - 200m",
-      color: "bg-blue-300",
+      text: "Tech Meetup",
+      type: "video",
+      src: "/media/video4.mp4",
       height: "h-56",
       width: "w-full",
       distance: "200m",
@@ -353,8 +372,9 @@ export default function FeedPage() {
     },
     {
       id: 104,
-      text: "Fashion Pop-up - 80m",
-      color: "bg-pink-200",
+      text: "Fashion Pop-up",
+      type: "image",
+      src: "/media/image2.jpg",
       height: "h-72",
       width: "w-full",
       distance: "80m",
@@ -362,75 +382,13 @@ export default function FeedPage() {
     },
     {
       id: 105,
-      text: "Food Truck - 150m",
-      color: "bg-orange-100",
+      text: "Food Truck",
+      type: "video",
+      src: "/media/video5.mp4",
       height: "h-88",
       width: "w-full",
       distance: "150m",
       timeLeft: "5h",
-    },
-    {
-      id: 106,
-      text: "Book Store Event - 300m",
-      color: "bg-yellow-100",
-      height: "h-64",
-      width: "w-full",
-      distance: "300m",
-      timeLeft: "1d",
-    },
-    {
-      id: 107,
-      text: "Yoga Studio - 250m",
-      color: "bg-green-100",
-      height: "h-96",
-      width: "w-full",
-      distance: "250m",
-      timeLeft: "8h",
-    },
-    {
-      id: 108,
-      text: "Live Music - 180m",
-      color: "bg-red-100",
-      height: "h-60",
-      width: "w-full",
-      distance: "180m",
-      timeLeft: "2h",
-    },
-    {
-      id: 109,
-      text: "Street Market - 400m",
-      color: "bg-teal-100",
-      height: "h-72",
-      width: "w-full",
-      distance: "400m",
-      timeLeft: "6h 30m",
-    },
-    {
-      id: 110,
-      text: "Photography Exhibit - 220m",
-      color: "bg-indigo-100",
-      height: "h-80",
-      width: "w-full",
-      distance: "220m",
-      timeLeft: "4h 15m",
-    },
-    {
-      id: 111,
-      text: "Coffee Shop Live - 90m",
-      color: "bg-amber-50",
-      height: "h-56",
-      width: "w-full",
-      distance: "90m",
-      timeLeft: "1h 45m",
-    },
-    {
-      id: 112,
-      text: "Park Cleanup Event - 350m",
-      color: "bg-emerald-100",
-      height: "h-64",
-      width: "w-full",
-      distance: "350m",
-      timeLeft: "3d",
     },
   ];
 
@@ -1142,57 +1100,46 @@ export default function FeedPage() {
                 <div
                   className={`relative w-full rounded-xl overflow-hidden shadow-lg cursor-pointer group mb-4 break-inside-avoid ${item.height}`}
                 >
-                  {/* Placeholder Content Area */}
-                  <div
-                    className={`w-full h-full flex items-center justify-center ${item.color}`}
-                  >
-                    <div className="text-center p-4 w-full">
-                      <p
-                        className="text-white font-semibold text-sm opacity-70 group-hover:opacity-100 transition-opacity mb-2 px-2"
-                        style={{
-                          color: [
-                            "bg-white",
-                            "bg-pink-100",
-                            "bg-pink-200",
-                            "bg-yellow-100",
-                            "bg-orange-200",
-                            "bg-orange-100",
-                            "bg-green-100",
-                            "bg-blue-200",
-                            "bg-blue-300",
-                            "bg-gray-100",
-                            "bg-amber-100",
-                            "bg-amber-50",
-                            "bg-purple-300",
-                            "bg-purple-200",
-                            "bg-gray-300",
-                            "bg-red-100",
-                            "bg-teal-100",
-                            "bg-indigo-100",
-                            "bg-emerald-100",
-                          ].includes(item.color)
-                            ? BLACK
-                            : WHITE,
-                        }}
-                      >
+                  {/* MEDIA DISPLAY AREA */}
+                  <div className="w-full h-full bg-gray-200">
+                    {item.type === "video" ? (
+                      <SmartVideo
+                        src={item.src}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={item.src}
+                        alt={item.text}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    )}
+
+                    {/* Gradient Overlay for Text Readability */}
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
+
+                    {/* Text Content */}
+                    <div className="absolute bottom-0 left-0 p-4 w-full z-10">
+                      <p className="text-white font-semibold text-sm opacity-90 group-hover:opacity-100 transition-opacity mb-2">
                         {item.text}
                       </p>
                       {item.distance && (
-                        <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="inline-block bg-white/20 backdrop-blur-md text-white text-xs px-2 py-1 rounded-full border border-white/30">
                           {item.distance} away
                         </div>
                       )}
                     </div>
                   </div>
 
-                  {/* UPDATED SHARE BUTTON - Top Left */}
+                  {/* SHARE BUTTON - Top Left */}
                   <button
                     onClick={(e) => handleShare(e, item.id)}
                     className="absolute top-2 left-2 pl-2 pr-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-105 z-20 flex items-center gap-1.5 shadow-md"
                     style={{
                       backgroundColor: "rgba(31, 31, 31, 0.9)",
                       color: WHITE,
-                      backdropFilter: "blur(4px)"
+                      backdropFilter: "blur(4px)",
                     }}
                     title="Share"
                   >
@@ -1239,7 +1186,7 @@ export default function FeedPage() {
                     </div>
                   </div>
 
-                  {/* Save Button Mock - Updated Color */}
+                  {/* Save Button */}
                   <button
                     className="absolute bottom-2 right-2 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-20"
                     style={{
@@ -1364,39 +1311,75 @@ export default function FeedPage() {
             {/* Icon */}
             <div className="flex-shrink-0">
               <div className="p-2 bg-orange-50 rounded-full">
-                <svg className="w-6 h-6 text-[#ff5720]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <svg
+                  className="w-6 h-6 text-[#ff5720]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
               </div>
             </div>
-            
+
             {/* Content - Horizontal Layout */}
             <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-               <div className="text-sm truncate">
-                 <span className="font-bold text-gray-900 block sm:inline mr-2">You're nearby!</span>
-                 <span className="text-gray-600">
-                   <span className="font-bold text-[#ff5720]">Nexus Properties</span> is 50m away.
-                 </span>
-               </div>
-               
-               <Link href="/pages/eventDetails" className="text-sm font-bold text-[#ff5720] hover:text-orange-700 whitespace-nowrap flex-shrink-0">
-                 View Details &rarr;
-               </Link>
+              <div className="text-sm truncate">
+                <span className="font-bold text-gray-900 block sm:inline mr-2">
+                  You're nearby!
+                </span>
+                <span className="text-gray-600">
+                  <span className="font-bold text-[#ff5720]">
+                    Nexus Properties
+                  </span>{" "}
+                  is 50m away.
+                </span>
+              </div>
+
+              <Link
+                href="/pages/eventDetails"
+                className="text-sm font-bold text-[#ff5720] hover:text-orange-700 whitespace-nowrap flex-shrink-0"
+              >
+                View Details &rarr;
+              </Link>
             </div>
 
             {/* Close */}
-            <button onClick={() => setShowNotification(false)} className="text-gray-400 hover:text-gray-500">
-               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-               </svg>
+            <button
+              onClick={() => setShowNotification(false)}
+              className="text-gray-400 hover:text-gray-500"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             </button>
           </div>
 
           {/* Progress Bar */}
           <div className="h-1 w-full bg-orange-100">
-            <div 
-              className="h-full bg-[#ff5720] transition-all duration-100 ease-linear" 
+            <div
+              className="h-full bg-[#ff5720] transition-all duration-100 ease-linear"
               style={{ width: `${notificationProgress}%` }}
             />
           </div>
