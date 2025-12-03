@@ -71,7 +71,7 @@ export default function EventDetailsPage() {
         <div className="p-8">
           <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-gray-100 pb-8 mb-8">
             <div className="flex gap-4 items-center">
-               <div className="bg-blue-50 text-[#1453A0] p-3 rounded-lg text-center min-w-[80px]">
+               <div className="bg-orange-50 text-[#ff5720] p-3 rounded-lg text-center min-w-[80px]">
                  <span className="block text-xs font-bold uppercase">Mar</span>
                  <span className="block text-2xl font-bold">15</span>
                </div>
@@ -82,7 +82,7 @@ export default function EventDetailsPage() {
             </div>
             
             <div className="flex w-full md:w-auto gap-3">
-              <button className="flex-1 md:flex-none bg-[#1453A0] hover:bg-blue-800 text-white px-8 py-3 rounded-lg font-bold shadow-sm transition">
+              <button className="flex-1 md:flex-none bg-[#ff5720] hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-bold shadow-sm transition">
                 Register for Free
               </button>
               <button className="flex-1 md:flex-none border border-gray-300 text-gray-600 hover:bg-gray-50 px-6 py-3 rounded-lg font-medium transition">
@@ -122,14 +122,14 @@ export default function EventDetailsPage() {
                 <div className="h-40 bg-gray-200 rounded-xl flex items-center justify-center text-gray-400 text-xs mb-4">
                   [Map View]
                 </div>
-                <button className="w-full text-[#1453A0] text-sm font-semibold hover:underline">Get Directions</button>
+                <button className="w-full text-[#ff5720] text-sm font-semibold hover:underline">Get Directions</button>
               </div>
               
               <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center">
                 <h3 className="font-bold text-gray-900 mb-2">Organizer</h3>
-                <div className="w-16 h-16 bg-white rounded-full mx-auto mb-3 shadow-sm flex items-center justify-center font-bold text-[#1453A0] text-xl">NP</div>
+                <div className="w-16 h-16 bg-white rounded-full mx-auto mb-3 shadow-sm flex items-center justify-center font-bold text-[#ff5720] text-xl">NP</div>
                 <p className="font-medium text-gray-900">Nexus Properties</p>
-                <Link href="/pages/businessProfile" className="text-sm text-[#1453A0] hover:underline mt-2 inline-block">View Profile</Link>
+                <Link href="/pages/businessProfile" className="text-sm text-[#ff5720] hover:underline mt-2 inline-block">View Profile</Link>
               </div>
             </div>
           </div>

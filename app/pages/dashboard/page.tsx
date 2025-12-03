@@ -1,6 +1,52 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+
+// --- Animation Component ---
+const AnimatedItem = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            setIsVisible(true);
+          }, delay);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '50px'
+      }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, [delay]);
+
+  return (
+    <div 
+      ref={ref}
+      className={`transition-all duration-700 ease-out transform ${
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-10'
+      }`}
+    >
+      {children}
+    </div>
+  );
+};
 
 export default function FeedPage() {
   const [showNotification, setShowNotification] = useState(false);
@@ -18,10 +64,10 @@ export default function FeedPage() {
     []
   );
 
-  // --- New Color Constants (from user update) ---
+  // --- Theme Constants ---
   const ORANGE = "#ff5720";
   const BLACK = "#1f1f1f";
-  const WHITE = "#f1f1f1"; // Used for main bg where 'gray-50' was
+  const WHITE = "#f1f1f1"; 
 
   // Function to simulate walking near a business
   const simulateProximity = () => {
@@ -1072,91 +1118,67 @@ export default function FeedPage() {
 
           {/* MASONRY GRID IMPLEMENTATION */}
           <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 px-4 lg:px-0">
-            {displayItems.map((item) => (
-              <div
-                key={item.id}
-                className={`relative w-full rounded-xl overflow-hidden shadow-lg cursor-pointer group mb-4 break-inside-avoid ${item.height}`}
-              >
-                {/* Placeholder Content Area */}
+            {displayItems.map((item, index) => (
+              <AnimatedItem key={item.id} delay={index * 50}>
                 <div
-                  className={`w-full h-full flex items-center justify-center ${item.color}`}
+                  className={`relative w-full rounded-xl overflow-hidden shadow-lg cursor-pointer group mb-4 break-inside-avoid ${item.height}`}
                 >
-                  <div className="text-center p-4 w-full">
-                    <p
-                      className="text-white font-semibold text-sm opacity-70 group-hover:opacity-100 transition-opacity mb-2 px-2"
-                      style={{
-                        color: [
-                          "bg-white",
-                          "bg-pink-100",
-                          "bg-pink-200",
-                          "bg-yellow-100",
-                          "bg-orange-200",
-                          "bg-orange-100",
-                          "bg-green-100",
-                          "bg-blue-200",
-                          "bg-blue-300",
-                          "bg-gray-100",
-                          "bg-amber-100",
-                          "bg-amber-50",
-                          "bg-purple-300",
-                          "bg-purple-200",
-                          "bg-gray-300",
-                          "bg-red-100",
-                          "bg-teal-100",
-                          "bg-indigo-100",
-                          "bg-emerald-100",
-                        ].includes(item.color)
-                          ? BLACK
-                          : WHITE,
-                      }}
-                    >
-                      {item.text}
-                    </p>
-                    {item.distance && (
-                      <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
-                        {item.distance} away
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* SHARE BUTTON - Top Left */}
-                <button
-                  onClick={(e) => handleShare(e, item.id)}
-                  className="absolute top-2 left-2 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 z-20"
-                  style={{
-                    backgroundColor: "rgba(31, 31, 31, 0.8)",
-                    color: WHITE,
-                  }}
-                  title="Share"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                  {/* Placeholder Content Area */}
+                  <div
+                    className={`w-full h-full flex items-center justify-center ${item.color}`}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                    />
-                  </svg>
-                </button>
+                    <div className="text-center p-4 w-full">
+                      <p
+                        className="text-white font-semibold text-sm opacity-70 group-hover:opacity-100 transition-opacity mb-2 px-2"
+                        style={{
+                          color: [
+                            "bg-white",
+                            "bg-pink-100",
+                            "bg-pink-200",
+                            "bg-yellow-100",
+                            "bg-orange-200",
+                            "bg-orange-100",
+                            "bg-green-100",
+                            "bg-blue-200",
+                            "bg-blue-300",
+                            "bg-gray-100",
+                            "bg-amber-100",
+                            "bg-amber-50",
+                            "bg-purple-300",
+                            "bg-purple-200",
+                            "bg-gray-300",
+                            "bg-red-100",
+                            "bg-teal-100",
+                            "bg-indigo-100",
+                            "bg-emerald-100",
+                          ].includes(item.color)
+                            ? BLACK
+                            : WHITE,
+                        }}
+                      >
+                        {item.text}
+                      </p>
+                      {item.distance && (
+                        <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                          {item.distance} away
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
-                {/* TIMER - Top Right */}
-                <div
-                  className="absolute top-2 right-2 p-1.5 px-2.5 rounded-full z-20"
-                  style={{
-                    backgroundColor: "rgba(31, 31, 31, 0.85)",
-                    color: "#ff6b6b",
-                    backdropFilter: "blur(4px)",
-                  }}
-                >
-                  <div className="flex items-center gap-1 text-xs font-semibold">
+                  {/* UPDATED SHARE BUTTON - Top Left */}
+                  <button
+                    onClick={(e) => handleShare(e, item.id)}
+                    className="absolute top-2 left-2 pl-2 pr-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-105 z-20 flex items-center gap-1.5 shadow-md"
+                    style={{
+                      backgroundColor: "rgba(31, 31, 31, 0.9)",
+                      color: WHITE,
+                      backdropFilter: "blur(4px)"
+                    }}
+                    title="Share"
+                  >
                     <svg
-                      className="w-3 h-3"
+                      className="w-4 h-4"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1165,27 +1187,54 @@ export default function FeedPage() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
                       />
                     </svg>
-                    <span>{item.timeLeft}</span>
-                  </div>
-                </div>
+                    <span className="text-xs font-bold">Share</span>
+                  </button>
 
-                {/* Save Button Mock - Updated Color */}
-                <button
-                  className="absolute bottom-2 right-2 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-20"
-                  style={{
-                    backgroundColor: "rgba(31, 31, 31, 0.8)",
-                    color: WHITE,
-                  }}
-                  title="Save"
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                  </svg>
-                </button>
-              </div>
+                  {/* TIMER - Top Right */}
+                  <div
+                    className="absolute top-2 right-2 p-1.5 px-2.5 rounded-full z-20"
+                    style={{
+                      backgroundColor: "rgba(31, 31, 31, 0.85)",
+                      color: "#ff6b6b",
+                      backdropFilter: "blur(4px)",
+                    }}
+                  >
+                    <div className="flex items-center gap-1 text-xs font-semibold">
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span>{item.timeLeft}</span>
+                    </div>
+                  </div>
+
+                  {/* Save Button Mock - Updated Color */}
+                  <button
+                    className="absolute bottom-2 right-2 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-20"
+                    style={{
+                      backgroundColor: "rgba(31, 31, 31, 0.8)",
+                      color: WHITE,
+                    }}
+                    title="Save"
+                  >
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                  </button>
+                </div>
+              </AnimatedItem>
             ))}
           </div>
         </div>

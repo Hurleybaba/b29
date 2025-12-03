@@ -7,7 +7,7 @@ export default function UserProfile() {
       {/* Navbar Placeholder */}
       <nav className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto flex justify-between items-center">
-          <div className="font-bold text-xl text-[#1453A0]">MyApp</div>
+          <div className="font-bold text-xl text-[#ff5720]">B23</div>
           <div className="flex gap-4 items-center">
             <Link
               href="/"
@@ -40,7 +40,7 @@ export default function UserProfile() {
                     <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
                 </div>
-                <button className="absolute bottom-0 right-0 bg-[#1453A0] text-white p-1.5 rounded-full hover:bg-blue-800 transition shadow-sm">
+                <button className="absolute bottom-0 right-0 bg-[#ff5720] text-white p-1.5 rounded-full hover:bg-orange-700 transition shadow-sm">
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -59,34 +59,34 @@ export default function UserProfile() {
               <h2 className="text-xl font-bold text-gray-900">Alex Johnson</h2>
               <p className="text-sm text-gray-500 mb-4">Product Designer</p>
               <div className="flex justify-center gap-2">
-                <span className="px-3 py-1 bg-blue-50 text-[#1453A0] text-xs font-medium rounded-full">
+                <span className="px-3 py-1 bg-orange-50 text-[#ff5720] text-xs font-medium rounded-full">
                   Standard User
                 </span>
               </div>
             </div>
 
             {/* UPGRADE CALL TO ACTION - NEW */}
-            <div className="bg-gradient-to-br from-[#1453A0] to-blue-700 rounded-2xl shadow-md p-6 text-white text-center">
+            <div className="bg-gradient-to-br from-[#ff5720] to-orange-600 rounded-2xl shadow-md p-6 text-white text-center">
               <h3 className="font-bold text-lg mb-2">Have a Business?</h3>
-              <p className="text-blue-100 text-sm mb-4">
+              <p className="text-orange-100 text-sm mb-4">
                 Unlock event hosting, analytics, and business tools.
               </p>
               <Link
                 href="/pages/subscription"
-                className="block w-full py-2 bg-white text-[#1453A0] rounded-lg font-semibold hover:bg-blue-50 transition shadow-sm"
+                className="block w-full py-2 bg-white text-[#ff5720] rounded-lg font-semibold hover:bg-orange-50 transition shadow-sm"
               >
                 Upgrade Now
               </Link>
             </div>
 
             {/* Business Dashboard Access (Visible after upgrade) */}
-            <div className="mt-4 bg-white border border-[#1453A0] rounded-2xl shadow-sm p-6 text-center">
+            <div className="mt-4 bg-white border border-[#ff5720] rounded-2xl shadow-sm p-6 text-center">
               <h3 className="font-bold text-gray-900 text-lg mb-2">
                 Nexus Properties
               </h3>
               <Link
                 href="/pages/businessDashboard"
-                className="block w-full py-2 bg-[#1453A0] text-white rounded-lg font-semibold hover:bg-blue-800 transition shadow-sm"
+                className="block w-full py-2 bg-[#ff5720] text-white rounded-lg font-semibold hover:bg-orange-700 transition shadow-sm"
               >
                 Manage Business
               </Link>
@@ -160,7 +160,7 @@ export default function UserProfile() {
                       className="sr-only peer"
                       defaultChecked
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1453A0]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#ff5720]"></div>
                   </label>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-gray-50">
@@ -178,7 +178,7 @@ export default function UserProfile() {
                       className="sr-only peer"
                       defaultChecked
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1453A0]"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#ff5720]"></div>
                   </label>
                 </div>
               </div>
@@ -190,7 +190,7 @@ export default function UserProfile() {
                 <h3 className="text-lg font-bold text-gray-900">
                   Saved Activity
                 </h3>
-                <button className="text-sm text-[#1453A0] font-medium hover:underline">
+                <button className="text-sm text-[#ff5720] font-medium hover:underline">
                   View All
                 </button>
               </div>
@@ -221,14 +221,14 @@ export default function UserProfile() {
                     </div>
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-semibold text-gray-900 text-sm group-hover:text-[#1453A0] transition">
+                        <h4 className="font-semibold text-gray-900 text-sm group-hover:text-[#ff5720] transition">
                           Modern Architecture Design
                         </h4>
                         <p className="text-xs text-gray-500 mt-1">
                           Saved 2 days ago
                         </p>
                       </div>
-                      <button className="text-[#1453A0]">
+                      <button className="text-[#ff5720]">
                         <svg
                           className="w-5 h-5 fill-current"
                           viewBox="0 0 24 24"
