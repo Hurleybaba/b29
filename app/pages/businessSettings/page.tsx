@@ -9,7 +9,7 @@ export default function BusinessSettingsPage() {
     <div className="min-h-screen bg-gray-50 md:flex">
       {/* Mobile Header */}
       <div className="md:hidden bg-white border-b border-gray-200 p-4 flex justify-between items-center sticky top-0 z-30">
-        <span className="text-xl font-bold text-[#1453A0]">MyApp Business</span>
+        <span className="text-xl font-bold text-[#ff5720]">B23 Business</span>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="text-gray-600 focus:outline-none"
@@ -55,26 +55,32 @@ export default function BusinessSettingsPage() {
       >
         <div>
           <div className="p-6">
-            <span className="text-xl font-bold text-[#1453A0]">
-              MyApp Business
+            <span className="text-xl font-bold text-[#ff5720]">
+              B23 Business
             </span>
           </div>
           <nav className="mt-6 px-4 space-y-2">
             <Link
               href="/pages/businessDashboard"
-              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium"
+              className="flex items-center gap-3 px-4 py-3  hover:bg-orange-50 rounded-lg text-gray-600 font-medium"
             >
               Overview
             </Link>
             <Link
               href="/pages/businessEvents"
-              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-medium"
+              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-orange-50 rounded-lg font-medium"
             >
               My Events
             </Link>
             <Link
+              href="/pages/businessAnalysis"
+              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-orange-50 rounded-lg font-medium"
+            >
+              Analytics
+            </Link>
+            <Link
               href="/pages/businessSettings"
-              className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#1453A0] rounded-lg font-medium"
+              className="flex items-center gap-3 px-4 py-3  text-[#ff5720] hover:bg-orange-50 rounded-lg font-medium"
             >
               Settings
             </Link>
@@ -85,13 +91,13 @@ export default function BusinessSettingsPage() {
         <div className="p-4 border-t border-gray-100 space-y-2 bg-white">
           <Link
             href="/pages/businessProfile"
-            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#1453A0] font-medium transition"
+            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition"
           >
             View Public Profile
           </Link>
           <Link
             href="/"
-            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#1453A0] font-medium transition"
+            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition"
           >
             &larr; Back to Home
           </Link>
@@ -111,7 +117,7 @@ export default function BusinessSettingsPage() {
                 Branding
               </h2>
               <div className="flex flex-col sm:flex-row items-center gap-6">
-                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 font-bold border-2 border-dashed border-gray-300 cursor-pointer hover:border-[#1453A0] hover:text-[#1453A0] transition shrink-0">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 font-bold border-2 border-dashed border-gray-300 cursor-pointer hover:border-[#ff5720] hover:text-[#ff5720] transition shrink-0">
                   Upload
                 </div>
                 <div className="flex-1 w-full">
@@ -121,7 +127,7 @@ export default function BusinessSettingsPage() {
                   <input
                     type="text"
                     defaultValue="Nexus Properties Ltd."
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1453A0] outline-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ff5720] outline-none"
                   />
                 </div>
               </div>
@@ -136,7 +142,7 @@ export default function BusinessSettingsPage() {
                 <input
                   type="email"
                   defaultValue="contact@nexusproperties.com"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1453A0] outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ff5720] outline-none"
                 />
               </div>
               <div>
@@ -146,7 +152,7 @@ export default function BusinessSettingsPage() {
                 <input
                   type="tel"
                   defaultValue="+1 (555) 123-4567"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1453A0] outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ff5720] outline-none"
                 />
               </div>
             </div>
@@ -158,18 +164,18 @@ export default function BusinessSettingsPage() {
               <input
                 type="text"
                 defaultValue="123 Business Avenue, Suite 400"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1453A0] outline-none mb-2"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ff5720] outline-none mb-2"
               />
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="text"
                   defaultValue="San Francisco"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1453A0] outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ff5720] outline-none"
                 />
                 <input
                   type="text"
                   defaultValue="94107"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1453A0] outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ff5720] outline-none"
                 />
               </div>
             </div>
@@ -181,14 +187,14 @@ export default function BusinessSettingsPage() {
               </label>
               <textarea
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1453A0] outline-none resize-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ff5720] outline-none resize-none"
                 defaultValue="We are a leading real estate agency specializing in luxury properties..."
               ></textarea>
             </div>
 
             {/* Action Buttons */}
             <div className="pt-4 flex flex-col sm:flex-row gap-4 border-t border-gray-100">
-              <button className="bg-[#1453A0] hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-medium transition shadow-sm w-full sm:w-auto">
+              <button className="bg-[#ff5720] hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition shadow-sm w-full sm:w-auto">
                 Save Changes
               </button>
               <button className="text-gray-500 hover:text-gray-700 px-4 py-2 font-medium w-full sm:w-auto">

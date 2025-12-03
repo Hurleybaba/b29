@@ -5,7 +5,7 @@ export default function CreatePostPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
         
-        <div className="bg-[#1453A0] px-6 py-4 flex justify-between items-center text-white">
+        <div className="bg-[#ff5720] px-6 py-4 flex justify-between items-center text-white">
           <h1 className="font-bold text-lg">Create Post</h1>
           <Link href="/feed" className="text-white/80 hover:text-white">✕</Link>
         </div>
@@ -29,15 +29,15 @@ export default function CreatePostPage() {
 
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
             <div className="flex gap-4">
-              <button className="text-gray-400 hover:text-[#1453A0] transition">
+              <button className="text-gray-400 hover:text-[#ff5720] transition">
                 <span className="sr-only">Add Image</span>
                 📷
               </button>
-              <button className="text-gray-400 hover:text-[#1453A0] transition">
+              <button className="text-gray-400 hover:text-[#ff5720] transition">
                 <span className="sr-only">Add Video</span>
                 🎥
               </button>
-              <button className="text-gray-400 hover:text-[#1453A0] transition">
+              <button className="text-gray-400 hover:text-[#ff5720] transition">
                 <span className="sr-only">Add Location</span>
                 📍
               </button>
@@ -45,7 +45,7 @@ export default function CreatePostPage() {
             
             <Link 
               href="/feed" 
-              className="bg-[#1453A0] hover:bg-blue-800 text-white px-6 py-2 rounded-full font-semibold transition"
+              className="bg-[#ff5720] hover:bg-orange-700 text-white px-6 py-2 rounded-full font-semibold transition"
             >
               Post
             </Link>
