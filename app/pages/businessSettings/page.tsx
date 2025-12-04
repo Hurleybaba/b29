@@ -88,19 +88,39 @@ export default function BusinessSettingsPage() {
         </div>
 
         {/* Bottom Nav Items */}
-        <div className="p-4 border-t border-gray-100 space-y-2 bg-white">
-          <Link
-            href="/pages/businessProfile"
-            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition"
-          >
-            View Public Profile
-          </Link>
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition"
-          >
-            &larr; Back to Home
-          </Link>
+        <div className="p-4 border-t border-gray-100 space-y-4 bg-white">
+          
+          {/* Subscription Ad Card - Updated to Orange Theme */}
+          <div className="rounded-xl bg-gradient-to-br from-[#ff5720] to-orange-700 p-4 text-white shadow-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white opacity-10 rounded-full blur-xl group-hover:scale-125 transition-transform duration-700"></div>
+            <h3 className="font-black text-lg italic tracking-wider mb-1">PRO PLAN</h3>
+            <p className="text-xs text-orange-100 mb-3 font-medium">Unlock full potential</p>
+            <ul className="text-[10px] text-orange-100 mb-4 space-y-1">
+                <li className="flex items-center gap-1">✨ Advanced Analytics</li>
+                <li className="flex items-center gap-1">🚀 Boosted Events</li>
+            </ul>
+            <Link 
+                href="/pages/subscription"
+                className="block w-full py-2 bg-white text-[#ff5720] text-xs font-bold text-center rounded-lg shadow hover:bg-gray-50 transition"
+            >
+                Manage Subscription
+            </Link>
+          </div>
+
+          <div className="space-y-2">
+            <Link
+              href="/pages/businessProfile"
+              className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition"
+            >
+              View Public Profile
+            </Link>
+            <Link
+              href="/"
+              className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition"
+            >
+              &larr; Back to Home
+            </Link>
+          </div>
         </div>
       </aside>
 

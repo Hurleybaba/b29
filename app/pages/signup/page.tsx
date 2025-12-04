@@ -4,6 +4,7 @@ import { useState } from "react";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
   const [loading, setLoading] = useState(false);
@@ -12,6 +13,7 @@ export default function SignUp() {
     email: "",
     password: "",
   });
+  const router = useRouter();
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -23,17 +25,18 @@ export default function SignUp() {
 
     try {
       setLoading(true);
-      await new Promise((r) => setTimeout(r, 2000));
+      // Demo logic: Direct redirect to dashboard
       console.log("Sign up:", formData);
+      await new Promise((r) => setTimeout(r, 800)); // Short artificial delay
+      router.push("/pages/dashboard");
     } catch (err) {
       setError("Something went wrong. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-linear-to-b from-[#f0f7ff] to-white">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-linear-to-b from-[#fff7ed] to-white">
 
       <div className="w-full max-w-md bg-white/80 backdrop-blur-lg rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] p-10 border border-white/40 transition-all">
 
@@ -113,7 +116,7 @@ export default function SignUp() {
             type="submit"
             loading={loading}
             disabled={loading}
-            className="w-full py-3 rounded-xl text-white bg-[#1453A0] hover:bg-[#0e3c78] shadow-md hover:shadow-lg transition-all"
+            className="w-full py-3 rounded-xl text-white bg-[#ff5720] hover:bg-[#e64a19] shadow-md hover:shadow-lg transition-all"
           >
             Sign Up
           </Button>
@@ -123,8 +126,8 @@ export default function SignUp() {
         <p className="text-center mt-6 text-sm text-gray-600">
           Already have an account?{" "}
           <Link
-            href="/signin"
-            className="font-medium text-[#1453A0] hover:underline"
+            href="/pages/login"
+            className="font-medium text-[#ff5720] hover:underline"
           >
             Sign in
           </Link>
