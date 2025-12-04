@@ -419,7 +419,7 @@ export default function FeedPage() {
           style={{ backgroundColor: WHITE, color: BLACK }}
         />
         <button
-          className="w-20 flex items-center justify-center text-white flex-shrink-0 hover:brightness-110 transition"
+          className="w-20 flex items-center justify-center text-white shrink-0 hover:brightness-110 transition"
           style={{ backgroundColor: ORANGE }}
         >
           <svg
@@ -504,7 +504,7 @@ export default function FeedPage() {
 
       {/* Location Scanning Modal */}
       {isLocationModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
           {/* Overlay */}
           <div
             className="absolute inset-0 bg-black/70 transition-opacity"
@@ -578,7 +578,7 @@ export default function FeedPage() {
                         }}
                       >
                         <div
-                          className="w-full h-full bg-gradient-to-t from-orange-400/80 to-transparent"
+                          className="w-full h-full bg-linear-to-t from-orange-400/80 to-transparent"
                           style={{
                             boxShadow: `0 0 12px 3px rgba(255, 87, 32, 0.5)`,
                           }}
@@ -846,7 +846,7 @@ export default function FeedPage() {
       {/* SHARE MODAL */}
       {shareModalOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-999 flex items-center justify-center p-4"
           onClick={() => setShareModalOpen(false)}
         >
           <div
@@ -958,7 +958,7 @@ export default function FeedPage() {
                   icon: (
                     <svg
                       viewBox="0 0 24 24"
-                      className="w-7 h-7 fill-white -ml-[2px]"
+                      className="w-7 h-7 fill-white -ml-0.5"
                     >
                       <path d="M23.5 6.2a3 3 0 0 0-2.1-2.2C19 3.5 12 3.5 12 3.5s-7 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.2c2.3.5 9.4.5 9.4.5s7 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.7 15.3V8.7l6 3.3-6 3.3Z" />
                     </svg>
@@ -1044,7 +1044,7 @@ export default function FeedPage() {
         <div className="w-full px-0 lg:px-6 min-h-screen">
           {/* Sticky Search Bar for Desktop - Takes full width of middle section */}
           <div
-            className="hidden lg:block sticky top-[64px] z-30 py-4 -mx-6 px-6"
+            className="hidden lg:block sticky top-16 z-30 py-4 -mx-6 px-6"
             style={{
               backgroundColor: WHITE,
               boxShadow:
@@ -1123,16 +1123,16 @@ export default function FeedPage() {
                     )}
 
                     {/* Gradient Overlay for Text Readability */}
-                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black/80 to-transparent pointer-events-none"></div>
 
                     {/* Text Content */}
                     <div className="absolute bottom-0 left-0 p-4 w-full z-10">
                       <p className="text-white font-semibold text-sm opacity-90 group-hover:opacity-100 transition-opacity mb-2">
                         {item.text}
                       </p>
-                      {item.distance && (
+                      {(item as any).distance && (
                         <div className="inline-block bg-white/20 backdrop-blur-md text-white text-xs px-2 py-1 rounded-full border border-white/30">
-                          {item.distance} away
+                          {(item as any).distance} away
                         </div>
                       )}
                     </div>
@@ -1246,17 +1246,17 @@ export default function FeedPage() {
             </h3>
             <ul className="space-y-3">
               <li className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-red-600 flex-shrink-0"></div>
+                <div className="w-8 h-8 rounded-full bg-red-600 shrink-0"></div>
                 <p className="text-sm font-medium text-gray-800">Fashion Hub</p>
               </li>
               <li className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-teal-500 flex-shrink-0"></div>
+                <div className="w-8 h-8 rounded-full bg-teal-500 shrink-0"></div>
                 <p className="text-sm font-medium text-gray-800">
                   Tech Solutions
                 </p>
               </li>
               <li className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-yellow-600 flex-shrink-0"></div>
+                <div className="w-8 h-8 rounded-full bg-yellow-600 shrink-0"></div>
                 <p className="text-sm font-medium text-gray-800">
                   Coffee Corner
                 </p>
@@ -1315,7 +1315,7 @@ export default function FeedPage() {
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-[90%] max-w-2xl bg-white rounded-lg shadow-2xl z-50 overflow-hidden flex flex-col border border-gray-100 animate-fade-in-up">
           <div className="flex items-center p-4 gap-4">
             {/* Icon */}
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <div className="p-2 bg-orange-50 rounded-full">
                 <svg
                   className="w-6 h-6 text-[#ff5720]"
@@ -1355,7 +1355,7 @@ export default function FeedPage() {
 
               <Link
                 href="/pages/eventDetails"
-                className="text-sm font-bold text-[#ff5720] hover:text-orange-700 whitespace-nowrap flex-shrink-0"
+                className="text-sm font-bold text-[#ff5720] hover:text-orange-700 whitespace-nowrap shrink-0"
               >
                 View Details &rarr;
               </Link>
