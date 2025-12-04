@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SpeechBubble } from "@/app/components/Chat";
 
 export default function BusinessProfile() {
   return (
@@ -299,6 +300,14 @@ export default function BusinessProfile() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* SPEECH BUBBLE */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <SpeechBubble
+          text="This is how your Public Business Profile looks to other users. It showcases your brand, listings, and contact info."
+          color="#800080"
+        />
       </div>
     </div>
   );

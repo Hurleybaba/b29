@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { SpeechBubble } from "@/app/components/Chat";
 
 // --- Smart Video Component ---
 // Handles the 5-second loop vs full play on hover logic
@@ -1032,6 +1033,11 @@ export default function FeedPage() {
               Simulate "Near Business"
             </button>
           </div>
+
+          <SpeechBubble
+            text={`This page features a sticky top navigation with branding, a mobile menu and user profile, a dynamic masonry feed with image and Smart Video previews, a floating button for location-based business results, interactive sidebars and mobile drawer shortcuts, and a share modal for quick social sharing`}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+          />
         </div>
 
         {/* --- Main Feed: Pinterest-Style Grid (Column 2 - Takes Max Width) --- */}

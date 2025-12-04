@@ -19,8 +19,11 @@ import {
   ResponsiveContainer,
   TooltipProps as RechartsTooltipProps,
 } from "recharts";
+import { SpeechBubble } from "@/app/components/Chat";
 
-// Define TypeScript interfaces
+// ... [Keep existing interfaces and component definitions: EventData, EventTypeData, etc. and AnimatedChart] ...
+// (Omitting repeated type definitions and data for brevity, assume they are still here)
+
 interface EventData {
   name: string;
   events: number;
@@ -65,7 +68,6 @@ interface SummaryStat {
   icon: string;
 }
 
-// Proper type for recharts tooltip payload
 interface TooltipPayloadItem {
   name: string;
   value: number;
@@ -80,7 +82,6 @@ interface CustomTooltipProps {
   label?: string;
 }
 
-// Animation wrapper component
 const AnimatedChart = ({
   children,
   delay = 0,
@@ -246,7 +247,6 @@ export default function BusinessAnalysis() {
     return null;
   };
 
-  // Custom label renderer for Pie chart
   const renderCustomizedLabel = (props: any) => {
     const { name, value, percent, x, y, midAngle } = props;
     const RADIAN = Math.PI / 180;
@@ -439,7 +439,7 @@ export default function BusinessAnalysis() {
           )}
         </div>
 
-        {/* Stats Overview - Add animation to stats too */}
+        {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {summaryStats.map((stat, index) => (
             <AnimatedChart key={index} delay={index * 100}>
@@ -467,7 +467,7 @@ export default function BusinessAnalysis() {
           ))}
         </div>
 
-        {/* Charts Grid with staggered animations */}
+        {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Event Performance Chart */}
           <AnimatedChart delay={100}>
@@ -692,6 +692,14 @@ export default function BusinessAnalysis() {
           </div>
         </AnimatedChart>
       </main>
+
+      {/* SPEECH BUBBLE */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <SpeechBubble
+          text="Dive into your business analytics. View charts for event performance, audience demographics, and conversion funnels."
+          color="#800080"
+        />
+      </div>
     </div>
   );
 }

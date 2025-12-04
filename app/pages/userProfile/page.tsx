@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SpeechBubble } from "@/app/components/Chat";
 
 export default function UserProfile() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -266,18 +267,26 @@ export default function UserProfile() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center transform transition-all scale-100">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg 
-                className="w-10 h-10 text-green-500 animate-bounce" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-10 h-10 text-green-500 animate-bounce"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="3"
+                  d="M5 13l4 4L19 7"
+                ></path>
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Upgraded!</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Account Upgraded!
+            </h2>
             <p className="text-gray-600 mb-8">
-              Welcome to Business. You now have access to all professional features.
+              Welcome to Business. You now have access to all professional
+              features.
             </p>
             <button
               onClick={handleModalConfirm}
@@ -288,6 +297,14 @@ export default function UserProfile() {
           </div>
         </div>
       )}
+
+      {/* SPEECH BUBBLE */}
+      <div className="fixed bottom-6 right-1 z-5000">
+        <SpeechBubble
+          text="This is the User Profile page where users can manage their personal info, view saved activity, and upgrade to a business account."
+          color="#007AFF"
+        />
+      </div>
     </div>
   );
 }

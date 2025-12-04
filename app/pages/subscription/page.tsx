@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { SpeechBubble } from "@/app/components/Chat";
 
 export default function SubscriptionPage() {
   const [isOpen, setIsOpen] = useState(false);
@@ -89,14 +90,17 @@ export default function SubscriptionPage() {
 
         {/* Bottom Nav Items */}
         <div className="p-4 border-t border-gray-100 space-y-4 bg-white">
-          
           {/* Subscription Ad Card (Visual Indicator that we are on this page context) */}
           <div className="rounded-xl bg-gradient-to-br from-[#ff5720] to-orange-700 p-4 text-white shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white opacity-10 rounded-full blur-xl"></div>
-            <h3 className="font-black text-lg italic tracking-wider mb-1">PRO PLAN</h3>
-            <p className="text-xs text-orange-100 mb-3 font-medium">You are viewing plans</p>
+            <h3 className="font-black text-lg italic tracking-wider mb-1">
+              PRO PLAN
+            </h3>
+            <p className="text-xs text-orange-100 mb-3 font-medium">
+              You are viewing plans
+            </p>
             <ul className="text-[10px] text-orange-100 mb-0 space-y-1">
-                <li className="flex items-center gap-1">✨ Upgrade anytime</li>
+              <li className="flex items-center gap-1">✨ Upgrade anytime</li>
             </ul>
           </div>
 
@@ -143,7 +147,10 @@ export default function SubscriptionPage() {
                 Professional
               </h2>
               <p className="text-4xl font-bold text-[#ff5720] mb-2">
-                $79 <span className="text-lg text-gray-500 font-medium">/month</span>
+                $50{" "}
+                <span className="text-lg text-gray-500 font-medium">
+                  /month
+                </span>
               </p>
               <p className="text-gray-500 text-sm mb-6">
                 Next billing date: November 01, 2025
@@ -159,21 +166,20 @@ export default function SubscriptionPage() {
             <h3 className="text-2xl font-bold text-gray-900 text-center mb-8">
               Available Plans
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Basic Plan */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition duration-200 flex flex-col">
-                <h4 className="text-xl font-bold text-gray-900 mb-4">
-                  Basic
-                </h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Basic</h4>
                 <p className="text-4xl font-bold text-gray-900 mb-6">
-                  $29 <span className="text-lg text-gray-500 font-medium">/mo</span>
+                  $20{" "}
+                  <span className="text-lg text-gray-500 font-medium">/mo</span>
                 </p>
-                
+
                 <ul className="space-y-4 mb-8 flex-grow">
                   <li className="flex items-start gap-3 text-gray-600 text-sm">
-                    <span className="text-[#ff5720] font-bold">●</span>
-                    5 Business Listings
+                    <span className="text-[#ff5720] font-bold">●</span>5
+                    Business Listings
                   </li>
                   <li className="flex items-start gap-3 text-gray-600 text-sm">
                     <span className="text-[#ff5720] font-bold">●</span>
@@ -186,7 +192,7 @@ export default function SubscriptionPage() {
                 </ul>
 
                 <button className="w-full py-3 px-4 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:border-[#ff5720] hover:text-[#ff5720] transition duration-200">
-                  Downgrade
+                  Select Plan
                 </button>
               </div>
 
@@ -199,9 +205,10 @@ export default function SubscriptionPage() {
                   Professional
                 </h4>
                 <p className="text-4xl font-bold text-[#ff5720] mb-6">
-                  $79 <span className="text-lg text-gray-500 font-medium">/mo</span>
+                  $50{" "}
+                  <span className="text-lg text-gray-500 font-medium">/mo</span>
                 </p>
-                
+
                 <ul className="space-y-4 mb-8 flex-grow">
                   <li className="flex items-start gap-3 text-gray-700 text-sm font-medium">
                     <span className="text-[#ff5720] font-bold">●</span>
@@ -222,7 +229,7 @@ export default function SubscriptionPage() {
                 </ul>
 
                 <button className="w-full py-3 px-4 rounded-lg bg-[#ff5720] text-white font-semibold cursor-default opacity-90">
-                  Current Plan
+                  Select Plan
                 </button>
               </div>
 
@@ -232,9 +239,10 @@ export default function SubscriptionPage() {
                   Enterprise
                 </h4>
                 <p className="text-4xl font-bold text-gray-900 mb-6">
-                  $199 <span className="text-lg text-gray-500 font-medium">/mo</span>
+                  $100{" "}
+                  <span className="text-lg text-gray-500 font-medium">/mo</span>
                 </p>
-                
+
                 <ul className="space-y-4 mb-8 flex-grow">
                   <li className="flex items-start gap-3 text-gray-600 text-sm">
                     <span className="text-[#ff5720] font-bold">●</span>
@@ -262,6 +270,14 @@ export default function SubscriptionPage() {
           </div>
         </div>
       </main>
+
+      {/* SPEECH BUBBLE */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <SpeechBubble
+          text="Manage your subscription plan and billing details here. Business owners will be able to subscribe to a plan as needed."
+          color="#007AFF"
+        />
+      </div>
     </div>
   );
 }
