@@ -1,22 +1,50 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+
+// Types from feedData.ts
+interface Comment {
+  id: number;
+  user: string;
+  avatarColor?: string; // Tailwind color class or hex
+  text: string;
+  time: string;
+  replies?: Comment[];
+}
+
+interface Author {
+  name: string;
+  handle: string;
+  avatarColor?: string;
+  verified: boolean;
+}
 
 interface MediaItem {
   id: number;
-  type: string;
-  src: string;
-  text?: string;
+  text: string;
+  type: "image" | "video" | "text";
+  src?: string;
+  timeLeft: string;
   distance?: string;
-  timeLeft?: string;
+  bgColor?: string; // For text posts
+  
+  // Required fields from feedData
+  author: Author;
+  likes: number;
+  shares: number;
+  saves: number;
+  tags: string[];
+  rating: number;
+  reviewCount: number;
+  comments: Comment[];
 }
 
 interface MediaModalProps {
   item: MediaItem;
-  items: MediaItem[]; // Added array of all items
+  items: MediaItem[]; 
   onClose: () => void;
   onShare?: () => void;
-  onNext?: () => void; // Added next callback
-  onPrevious?: () => void; // Added previous callback
+  onNext?: () => void; 
+  onPrevious?: () => void; 
 }
 
 export const MediaModal = ({ 
@@ -31,9 +59,16 @@ export const MediaModal = ({
     items.findIndex(i => i.id === item.id)
   );
   const [currentItem, setCurrentItem] = useState<MediaItem>(item);
+  const [commentInput, setCommentInput] = useState("");
+  
+  // Scroll comments to top when item changes
+  const commentsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setCurrentIndex(items.findIndex(i => i.id === currentItem.id));
+    if (commentsRef.current) {
+        commentsRef.current.scrollTop = 0;
+    }
   }, [currentItem, items]);
 
   const handleNext = () => {
@@ -62,238 +97,277 @@ export const MediaModal = ({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose, handleNext, handlePrevious]);
 
+  // Format large numbers
+  const formatCount = (num: number) => {
+    if (num >= 1000) return (num / 1000).toFixed(1) + "k";
+    return num.toString();
+  };
+
   return (
     <div 
-      className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 lg:p-8"
       onClick={onClose}
     >
       {/* Close Button */}
       <button 
         onClick={onClose}
-        className="absolute top-6 right-6 text-white/80 hover:text-white transition-colors z-[1010] p-3"
+        className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors z-[1010] p-2 bg-black/50 rounded-full"
       >
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
+      {/* Main Container - 3 Columns */}
       <div 
-        className="relative w-full h-full flex flex-col lg:flex-row items-center justify-center max-w-7xl mx-auto gap-6 lg:gap-8"
+        className="relative w-full h-full max-h-[90vh] flex flex-col lg:flex-row items-stretch justify-center max-w-[95%] mx-auto gap-4 lg:gap-6"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Left Column: Media */}
-        <div className="lg:w-2/3 flex flex-col items-center justify-center relative">
-          {/* Previous Button - Left Side */}
+        
+        {/* COLUMN 1: Details (Left) */}
+        <div className="lg:w-[25%] flex flex-col bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden h-full order-2 lg:order-1">
+          <div className="p-5 h-full overflow-y-auto custom-scrollbar">
+            
+            {/* 1. Author Info */}
+            <div className="flex items-center gap-3 mb-6 pb-6 border-b border-white/10">
+              <div className={`w-12 h-12 rounded-full overflow-hidden ${currentItem.author?.avatarColor} ring-2 ring-white/20 flex items-center justify-center`}>
+                 <span className="text-white font-bold text-xl uppercase">{currentItem.author.name.charAt(0)}</span>
+              </div>
+              <div>
+                <p className="text-white font-bold text-lg">{currentItem.author.name}</p>
+                <div className="flex items-center gap-2">
+                  {currentItem.author.verified && (
+                     <span className="text-orange-400 text-xs font-semibold flex items-center gap-0.5">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                        Verified
+                     </span>
+                  )}
+                  {currentItem.author.verified && <span className="text-white/40 text-xs">•</span>}
+                  <p className="text-white/50 text-xs">{currentItem.timeLeft} ago</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Reviews & Ratings */}
+            <div className="mb-6">
+              <div className="flex items-center gap-1 mb-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <svg 
+                    key={star} 
+                    className={`w-4 h-4 ${star <= Math.round(currentItem.rating) ? "text-yellow-500" : "text-gray-600"}`} 
+                    fill="currentColor" 
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+                <span className="ml-2 text-white font-bold text-sm">{currentItem.rating}</span>
+              </div>
+              <p className="text-white/50 text-xs">Based on {currentItem.reviewCount} reviews</p>
+            </div>
+
+            {/* 3. Post Details */}
+            <div className="mb-6">
+              <h1 className="text-white text-xl font-bold mb-3 leading-snug">
+                {currentItem.text.slice(0, 50) + (currentItem.text.length > 50 ? "..." : "")}
+              </h1>
+              <p className="text-white/80 text-sm leading-relaxed mb-4">
+                {currentItem.text}
+              </p>
+              
+              {/* Distance Badge */}
+              {currentItem.distance && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 text-white/70 text-xs font-medium rounded-lg border border-white/10">
+                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {currentItem.distance} away
+                </div>
+              )}
+            </div>
+
+            {/* 4. Tags */}
+            <div className="mb-6">
+              <h3 className="text-white/40 text-xs font-bold uppercase tracking-wider mb-3">Tags</h3>
+              <div className="flex flex-wrap gap-2">
+                {currentItem.tags.length > 0 ? (
+                    currentItem.tags.map(tag => (
+                    <span key={tag} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-blue-300 text-xs rounded transition-colors cursor-pointer">
+                        {tag}
+                    </span>
+                    ))
+                ) : (
+                    <span className="text-white/20 text-xs italic">No tags</span>
+                )}
+              </div>
+            </div>
+
+            {/* 5. Engagement Stats (Grid) */}
+            <div className="grid grid-cols-3 gap-2 p-3 bg-white/5 rounded-xl border border-white/5">
+                <div className="text-center">
+                  <div className="text-white font-bold">{formatCount(currentItem.likes)}</div>
+                  <div className="text-white/30 text-[10px] uppercase">Likes</div>
+                </div>
+                <div className="text-center border-l border-white/10">
+                  <div className="text-white font-bold">{formatCount(currentItem.shares)}</div>
+                  <div className="text-white/30 text-[10px] uppercase">Shares</div>
+                </div>
+                <div className="text-center border-l border-white/10">
+                  <div className="text-white font-bold">{formatCount(currentItem.saves)}</div>
+                  <div className="text-white/30 text-[10px] uppercase">Saves</div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+
+        {/* COLUMN 2: Media Content (Center) */}
+        <div className="lg:w-[50%] flex flex-col relative w-full h-full justify-center order-1 lg:order-2">
+          
+          {/* Navigation Buttons */}
           {currentIndex > 0 && (
             <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                handlePrevious();
-              }}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 text-white/80 hover:text-white bg-black/50 backdrop-blur-sm p-4 rounded-full hover:bg-black/70 transition-all duration-300 hover:scale-110 group"
-              title="Previous"
+              onClick={(e) => { e.stopPropagation(); handlePrevious(); }}
+              className="absolute left-4 z-20 text-white/70 hover:text-white bg-black/40 hover:bg-black/60 p-3 rounded-full backdrop-blur-sm transition-all"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-              </svg>
-              <span className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Previous
-              </span>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
           )}
-
-          <div className="relative w-full max-w-4xl">
-            {currentItem.type === "video" ? (
-              <div className="relative bg-black rounded-xl overflow-hidden shadow-2xl">
-                <video
-                  src={currentItem.src}
-                  className="w-full h-auto max-h-[80vh] rounded-lg outline-none"
-                  controls
-                  autoPlay
-                  playsInline
-                />
-                {/* Video Progress Bar */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
-                  <div className="h-full bg-orange-500 w-1/3"></div>
-                </div>
-              </div>
-            ) : (
-              <div className="relative bg-black rounded-xl overflow-hidden shadow-2xl">
-                <img 
-                  src={currentItem.src} 
-                  alt={currentItem.text || "Full view"} 
-                  className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
-                  loading="eager"
-                />
-                {/* Zoom Controls */}
-                <div className="absolute bottom-4 right-4 flex gap-2">
-                  <button className="text-white bg-black/60 backdrop-blur-sm p-2 rounded-full hover:bg-black/80 transition">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Next Button - Right Side */}
+          
           {currentIndex < items.length - 1 && (
             <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                handleNext();
-              }}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 text-white/80 hover:text-white bg-black/50 backdrop-blur-sm p-4 rounded-full hover:bg-black/70 transition-all duration-300 hover:scale-110 group"
-              title="Next"
+              onClick={(e) => { e.stopPropagation(); handleNext(); }}
+              className="absolute right-4 z-20 text-white/70 hover:text-white bg-black/40 hover:bg-black/60 p-3 rounded-full backdrop-blur-sm transition-all"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-              </svg>
-              <span className="absolute right-full mr-2 top-1/2 transform -translate-y-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Next
-              </span>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
             </button>
           )}
 
-          {/* Progress Indicator */}
-          <div className="mt-4 flex items-center justify-center space-x-2">
-            {items.map((_, index) => (
-              <button
-                key={index}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentItem(items[index]);
-                }}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex 
-                    ? "bg-orange-500 w-8" 
-                    : "bg-white/30 hover:bg-white/50"
-                }`}
+          {/* Media Display */}
+          <div className="relative w-full h-full flex items-center justify-center bg-black rounded-xl overflow-hidden shadow-2xl border border-white/10">
+            {currentItem.type === "video" ? (
+              <video
+                src={currentItem.src}
+                className="w-full h-full object-contain"
+                controls
+                autoPlay
+                playsInline
               />
-            ))}
-          </div>
-
-          {/* Counter */}
-          <div className="mt-2 text-white/70 text-sm">
-            {currentIndex + 1} / {items.length}
-          </div>
-        </div>
-
-        {/* Right Column: Details */}
-        <div className="lg:w-1/3 flex flex-col bg-black/40 backdrop-blur-md rounded-2xl p-6 border border-white/10 max-h-[80vh] overflow-y-auto">
-          {/* Action Buttons */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <button className="text-white hover:bg-white/10 p-3 rounded-full transition">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-              </button>
-              {onShare && (
-                <button 
-                  onClick={onShare}
-                  className="text-white hover:bg-white/10 p-3 rounded-full transition"
-                  title="Share"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                  </svg>
-                </button>
-              )}
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const link = document.createElement('a');
-                  link.href = currentItem.src;
-                  link.download = currentItem.type === "video" ? `video-${currentItem.id}.mp4` : `image-${currentItem.id}.jpg`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                }}
-                className="text-white hover:bg-white/10 p-3 rounded-full transition"
-                title="Download"
+            ) : currentItem.type === "text" ? (
+              <div 
+                className="w-full h-full flex items-center justify-center p-12 text-center"
+                style={{ backgroundColor: currentItem.bgColor || "#111" }}
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-              </button>
-            </div>
-            
-            {/* Distance Badge */}
-            {currentItem.distance && (
-              <span className="px-3 py-1.5 bg-orange-500/20 text-orange-300 text-xs font-bold rounded-full border border-orange-500/30">
-                {currentItem.distance}
-              </span>
+                 <p className="text-white font-bold text-3xl md:text-5xl leading-tight">
+                   {currentItem.text}
+                 </p>
+              </div>
+            ) : (
+              <img 
+                src={currentItem.src} 
+                alt={currentItem.text} 
+                className="w-full h-full object-contain"
+              />
             )}
           </div>
 
-          {/* Post Content */}
-          <div className="mb-6">
-            <h1 className="text-white text-xl font-bold mb-4">Post Details</h1>
-            <div className="bg-white/5 rounded-xl p-4 mb-4">
-              <h2 className="text-white font-bold text-lg mb-2">Urban Vibes</h2>
-              <p className="text-white/80 text-sm leading-relaxed">
-                {currentItem.text || "Your school got this, your school got that. Your school got hospital?"}
-              </p>
-            </div>
-          </div>
-
-          {/* Engagement Stats */}
-          <div className="mb-6">
-            <h3 className="text-white/70 text-sm font-medium mb-3">ENGAGEMENT</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center bg-white/5 rounded-xl p-4">
-                <div className="text-white text-2xl font-bold">42</div>
-                <div className="text-white/50 text-xs">Likes</div>
-              </div>
-              <div className="text-center bg-white/5 rounded-xl p-4">
-                <div className="text-white text-2xl font-bold">18</div>
-                <div className="text-white/50 text-xs">Shares</div>
-              </div>
-              <div className="text-center bg-white/5 rounded-xl p-4">
-                <div className="text-white text-2xl font-bold">7</div>
-                <div className="text-white/50 text-xs">Comments</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="mb-6">
-            <h3 className="text-white/70 text-sm font-medium mb-3">TAGS</h3>
-            <div className="flex flex-wrap gap-2">
-              {["#Business", "#Friendship", "#Education", "#Community", "#UrbanVibes"].map(tag => (
-                <span key={tag} className="px-3 py-1.5 bg-white/10 text-white/90 text-xs font-medium rounded-full border border-white/20">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Time Information */}
-          {currentItem.timeLeft && (
-            <div className="mb-6">
-              <h3 className="text-white/70 text-sm font-medium mb-2">TIME LEFT</h3>
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-white font-bold">{currentItem.timeLeft}</span>
-              </div>
-            </div>
-          )}
-
-          {/* Author Info */}
-          <div className="mt-auto pt-6 border-t border-white/10">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-orange-500 to-pink-500"></div>
-              <div>
-                <p className="text-white font-bold">Creative Studio</p>
-                <p className="text-white/50 text-xs">Posted 2 hours ago</p>
-              </div>
-            </div>
+          {/* Action Bar */}
+          <div className="mt-4 flex items-center justify-between px-4">
+             <div className="flex gap-1.5">
+                {items.map((_, index) => (
+                  <div key={index} className={`h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? "w-6 bg-orange-500" : "w-1.5 bg-white/20"}`} />
+                ))}
+             </div>
+             <div className="flex gap-3">
+               <button className="text-white hover:text-pink-500 transition-colors p-2 bg-white/5 rounded-full hover:bg-white/10">
+                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+               </button>
+               {onShare && (
+                <button onClick={onShare} className="text-white hover:text-blue-400 transition-colors p-2 bg-white/5 rounded-full hover:bg-white/10">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                </button>
+               )}
+             </div>
           </div>
         </div>
+
+
+        {/* COLUMN 3: Comments (Right) */}
+        <div className="lg:w-[25%] flex flex-col bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden h-full order-3">
+          
+          {/* Header */}
+          <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+            <h3 className="text-white font-semibold">Comments <span className="text-white/40 font-normal ml-1">({currentItem.comments.length})</span></h3>
+            <button className="text-xs text-white/50 hover:text-white">Sort by Newest</button>
+          </div>
+
+          {/* Comment List */}
+          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-4" ref={commentsRef}>
+            {currentItem.comments.length > 0 ? (
+                currentItem.comments.map((comment) => (
+                    <div key={comment.id} className="flex gap-3">
+                        <div className={`w-8 h-8 rounded-full ${comment.avatarColor} flex-shrink-0 flex items-center justify-center text-xs font-bold text-white`}>
+                           {comment.user.charAt(0)}
+                        </div>
+                        <div className="flex-1">
+                            <div className="flex items-baseline justify-between">
+                                <span className="text-white text-sm font-bold">{comment.user}</span>
+                                <span className="text-white/30 text-[10px]">{comment.time}</span>
+                            </div>
+                            <p className="text-white/80 text-xs mt-1">{comment.text}</p>
+                            
+                            {/* Replies */}
+                            {comment.replies && comment.replies.length > 0 && (
+                                <div className="mt-3 ml-2 pl-3 border-l border-white/10 space-y-3">
+                                    {comment.replies.map(reply => (
+                                        <div key={reply.id} className="flex gap-2">
+                                            <div className={`w-6 h-6 rounded-full ${reply.avatarColor} flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white`}>
+                                                {reply.user.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <span className="text-white text-xs font-bold block">{reply.user}</span>
+                                                <p className="text-white/70 text-xs">{reply.text}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            <button className="text-white/40 text-[10px] mt-2 hover:text-white transition-colors">Reply</button>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <div className="text-center py-10">
+                    <p className="text-white/30 text-sm">No comments yet. Be the first!</p>
+                </div>
+            )}
+          </div>
+
+          {/* Comment Input */}
+          <div className="p-4 bg-white/5 border-t border-white/10">
+             <div className="relative">
+               <input 
+                 type="text" 
+                 placeholder="Add a comment..."
+                 value={commentInput}
+                 onChange={(e) => setCommentInput(e.target.value)}
+                 className="w-full bg-black/50 border border-white/10 rounded-full py-2.5 pl-4 pr-12 text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-orange-500/50 transition-all"
+               />
+               <button 
+                className="absolute right-1.5 top-1.5 p-1.5 bg-orange-500 rounded-full text-white hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!commentInput.trim()}
+               >
+                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M12 5l7 7-7 7" />
+                 </svg>
+               </button>
+             </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
   );

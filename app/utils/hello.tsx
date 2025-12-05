@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { SpeechBubble } from "@/app/components/Chat";
-import { originalPostItems, nearbyPostItems, OriginalPostItemsProps } from "../../utils/feedData";
+import { originalPostItems, nearbyPostItems, OriginalPostItemsProps } from "../utils/feedData";
 import {
   SearchBar,
   SmartVideo,
@@ -730,28 +730,27 @@ export default function FeedPage() {
 
       {/* Media Modal */}
       {selectedMediaItem && (
-  <MediaModal
-    item={selectedMediaItem}
-    items={filteredItems}
-    onNext={
-      () => {
-        const currentIndex = filteredItems.findIndex(i => i.id === selectedMediaItem.id);
-        const nextIndex = (currentIndex + 1) % filteredItems.length;
-        setSelectedMediaItem(filteredItems[nextIndex]);
-    }}
-    onPrevious={() => {
-      const currentIndex = filteredItems.findIndex(i => i.id === selectedMediaItem.id);
-      const prevIndex = (currentIndex - 1 + filteredItems.length) % filteredItems.length;
-      setSelectedMediaItem(filteredItems[prevIndex]);
-    }}
-    onClose={() => setSelectedMediaItem(null)}
-    onShare={() => {
-      setSelectedShareItem(selectedMediaItem.id);
-      setShareModalOpen(true);
-    }}
-
-  />
-)}
+        <MediaModal
+          item={selectedMediaItem}
+          items={filteredItems}
+          onNext={
+            () => {
+              const currentIndex = filteredItems.findIndex(i => i.id === selectedMediaItem.id);
+              const nextIndex = (currentIndex + 1) % filteredItems.length;
+              setSelectedMediaItem(filteredItems[nextIndex]);
+          }}
+          onPrevious={() => {
+            const currentIndex = filteredItems.findIndex(i => i.id === selectedMediaItem.id);
+            const prevIndex = (currentIndex - 1 + filteredItems.length) % filteredItems.length;
+            setSelectedMediaItem(filteredItems[prevIndex]);
+          }}
+          onClose={() => setSelectedMediaItem(null)}
+          onShare={() => {
+             setSelectedShareItem(selectedMediaItem.id);
+             setShareModalOpen(true);
+          }}
+        />
+      )}
 
       {/* Helper Speech Bubble */}
       <div className="fixed bottom-10 left-10 z-50 hidden xl:block">
