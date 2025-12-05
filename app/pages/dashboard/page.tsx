@@ -2,101 +2,13 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { SpeechBubble } from "@/app/components/Chat";
-
-// --- Smart Video Component ---
-// Handles the 5-second loop vs full play on hover logic
-const SmartVideo = ({
-  src,
-  className,
-}: {
-  src: string;
-  className?: string;
-}) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleTimeUpdate = () => {
-      // If NOT hovering and we pass 5 seconds, reset to 0
-      if (!isHovered && video.currentTime >= 5) {
-        video.currentTime = 0;
-        video.play();
-      }
-    };
-
-    video.addEventListener("timeupdate", handleTimeUpdate);
-    return () => {
-      video.removeEventListener("timeupdate", handleTimeUpdate);
-    };
-  }, [isHovered]);
-
-  return (
-    <video
-      ref={videoRef}
-      src={src}
-      className={className}
-      muted
-      autoPlay
-      loop={isHovered} // Only loop the full video if hovering (otherwise we manually loop at 5s)
-      playsInline
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    />
-  );
-};
-
-// --- Animation Component ---
-const AnimatedItem = ({
-  children,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-}) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            setIsVisible(true);
-          }, delay);
-          observer.disconnect();
-        }
-      },
-      {
-        threshold: 0.1,
-        rootMargin: "50px",
-      }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
-    };
-  }, [delay]);
-
-  return (
-    <div
-      ref={ref}
-      className={`transition-all duration-700 ease-out transform ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
-    >
-      {children}
-    </div>
-  );
-};
+import { originalPostItems, nearbyPostItems } from "../../utils/feedData";
+import {
+  SearchBar,
+  AnimatedItem,
+  SmartVideo,
+} from "@/app/components/FeddHelpers";
+import { MediaModal } from "@/app/components/MediaModal";
 
 export default function FeedPage() {
   const [showNotification, setShowNotification] = useState(false);
@@ -110,10 +22,13 @@ export default function FeedPage() {
   const [selectedShareItem, setSelectedShareItem] = useState<number | null>(
     null
   );
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [scanProgress, setScanProgress] = useState(0);
   const [dots, setDots] = useState<Array<{ x: number; y: number; id: number }>>(
     []
   );
+  const [selectedMediaItem, setSelectedMediaItem] = useState<any | null>(null);
 
   // --- Theme Constants ---
   const ORANGE = "#ff5720";
@@ -125,6 +40,8 @@ export default function FeedPage() {
     setNotificationProgress(100);
     setShowNotification(true);
   };
+
+  // Filter items based on search query
 
   // Timer logic for notification
   useEffect(() => {
@@ -208,191 +125,6 @@ export default function FeedPage() {
     };
   };
 
-  // --- MOCK DATA WITH MEDIA ---
-  // Ensure you have these files in public/media/ or update paths
-  const originalPostItems = [
-    {
-      id: 1,
-      text: "Urban Vibes",
-      type: "video",
-      src: "/media/b5d706d365ed3436ba27651e382e87b5_1764753320504.mp4",
-      height: "h-80",
-      width: "w-full",
-      timeLeft: "2h 30m",
-    },
-    {
-      id: 2,
-      text: "Summer Collection",
-      type: "image",
-      src: "/media/3a1e795cae4f9bd335450403bff9d6bd.png",
-      height: "h-48",
-      width: "w-full",
-      timeLeft: "1d 5h",
-    },
-    {
-      id: 3,
-      text: "Tech Unboxing",
-      type: "video",
-      src: "/media/4f84bf265315d88bdddb03db5e85fef0_1764753202715.mp4",
-      height: "h-64",
-      width: "w-full",
-      timeLeft: "45m",
-    },
-    {
-      id: 4,
-      text: "Artistic Process",
-      type: "video",
-      src: "/media/eabff569a9bd0afa3bd2959f995f56ca_1764753406900.mp4",
-      height: "h-96",
-      width: "w-full",
-      timeLeft: "3h 15m",
-    },
-    {
-      id: 5,
-      text: "Morning Coffee",
-      type: "image",
-      src: "/media/7066c5a623d29c220d0b131a9b9e5fa4.png",
-      height: "h-56",
-      width: "w-full",
-      timeLeft: "6h",
-    },
-    {
-      id: 6,
-      text: "Nature Walk",
-      type: "video",
-      src: "/media/59522b476d4e635cd1151d714d4712e6_1764753388870.mp4",
-      height: "h-72",
-      width: "w-full",
-      timeLeft: "12h 30m",
-    },
-    {
-      id: 7,
-      text: "Skate Park Tricks",
-      type: "video",
-      src: "/media/051d0c0fc208f8ec05da017a20ce78f6_1764749704694.mp4",
-      height: "h-80",
-      width: "w-full",
-      timeLeft: "1d",
-    },
-    {
-      id: 8,
-      text: "Interior Design",
-      type: "image",
-      src: "/media/48829418a0a6222084d050efd4fe9175.png",
-      height: "h-64",
-      width: "w-full",
-      timeLeft: "4h",
-    },
-    {
-      id: 9,
-      text: "Concert Highlights",
-      type: "video",
-      src: "/media/9c15daa7ebf874a293d07c9b98398c52_1764749604790.mp4",
-      height: "h-96",
-      width: "w-full",
-      timeLeft: "8h 45m",
-    },
-    {
-      id: 10,
-      text: "Product Reveal",
-      type: "image",
-      src: "public/media/efde2a88bc61b30a9dfe5cca7d3da070.png",
-      height: "h-60",
-      width: "w-full",
-      timeLeft: "2d",
-    },
-    {
-      id: 11,
-      text: "Street Food",
-      type: "video",
-      src: "/media/043d516ddba1573be29ea9bedb0b313f_1764749576340.mp4", // Recycling for demo
-      height: "h-48",
-      width: "w-full",
-      timeLeft: "1h 30m",
-    },
-    {
-      id: 12,
-      text: "Pet Moments",
-      type: "image",
-      src: "/media/7066c5a623d29c220d0b131a9b9e5fa4.png",
-      height: "h-72",
-      width: "w-full",
-      timeLeft: "5h",
-    },
-    {
-      id: 13,
-      text: "Luxury Villa Tour",
-      type: "video",
-      src: "/media/043d516ddba1573be29ea9bedb0b313f_1764749576340.mp4",
-      height: "h-80",
-      width: "w-full",
-      timeLeft: "1d 3h",
-    },
-    {
-      id: 14,
-      text: "Architecture",
-      type: "image",
-      src: "/media/3a1e795cae4f9bd335450403bff9d6bd.png",
-      height: "h-64",
-      width: "w-full",
-      timeLeft: "9h 20m",
-    },
-  ];
-
-  // Filtered results based on location
-  const nearbyPostItems = [
-    {
-      id: 101,
-      text: "Nearby Cafe - 50m",
-      type: "video",
-      src: "/media/video3.mp4",
-      height: "h-64",
-      width: "w-full",
-      distance: "50m",
-      timeLeft: "1h 15m",
-    },
-    {
-      id: 102,
-      text: "Local Art Gallery",
-      type: "image",
-      src: "/media/image1.jpg",
-      height: "h-80",
-      width: "w-full",
-      distance: "120m",
-      timeLeft: "3h",
-    },
-    {
-      id: 103,
-      text: "Tech Meetup",
-      type: "video",
-      src: "/media/video4.mp4",
-      height: "h-56",
-      width: "w-full",
-      distance: "200m",
-      timeLeft: "2h 30m",
-    },
-    {
-      id: 104,
-      text: "Fashion Pop-up",
-      type: "image",
-      src: "/media/image2.jpg",
-      height: "h-72",
-      width: "w-full",
-      distance: "80m",
-      timeLeft: "45m",
-    },
-    {
-      id: 105,
-      text: "Food Truck",
-      type: "video",
-      src: "/media/video5.mp4",
-      height: "h-88",
-      width: "w-full",
-      distance: "150m",
-      timeLeft: "5h",
-    },
-  ];
-
   // State to track which items to display
   const [displayItems, setDisplayItems] = useState(originalPostItems);
 
@@ -405,47 +137,16 @@ export default function FeedPage() {
     }
   }, [showNearbyResults]);
 
-  // Fixed SearchBar component with ORANGE color updates
-  const SearchBar = () => (
-    <div className="w-full">
-      <div
-        className="flex overflow-hidden bg-white rounded-lg shadow-md"
-        style={{ border: `2px solid ${ORANGE}` }}
-      >
-        <input
-          type="text"
-          placeholder="Search"
-          className="flex-1 pl-6 pr-4 py-4 text-base text-gray-800 focus:outline-none w-full"
-          style={{ backgroundColor: WHITE, color: BLACK }}
-        />
-        <button
-          className="w-20 flex items-center justify-center text-white flex-shrink-0 hover:brightness-110 transition"
-          style={{ backgroundColor: ORANGE }}
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2.5"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            ></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  );
-
   // Share button handler
   const handleShare = (e: React.MouseEvent, itemId: number) => {
     e.stopPropagation();
     setSelectedShareItem(itemId);
     setShareModalOpen(true);
   };
+
+  const filteredItems = displayItems.filter((item) =>
+    item.text.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen relative" style={{ backgroundColor: WHITE }}>
@@ -488,7 +189,13 @@ export default function FeedPage() {
 
           {/* Search Bar on Mobile */}
           <div className="sm:block lg:hidden flex-1 mx-4">
-            <SearchBar />
+            <SearchBar
+              ORANGE="#ff5720"
+              WHITE="#f1f1f1"
+              BLACK={"#1f1f1f"}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
 
           {/* Right Links */}
@@ -825,6 +532,32 @@ export default function FeedPage() {
               </ul>
             </div>
 
+            <div className="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+              <h3 className="font-bold text-gray-900 mb-2">
+                Featured Businesses
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-red-600 flex-shrink-0"></div>
+                  <p className="text-sm font-medium text-gray-800">
+                    Fashion Hub
+                  </p>
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-teal-500 flex-shrink-0"></div>
+                  <p className="text-sm font-medium text-gray-800">
+                    Tech Solutions
+                  </p>
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-yellow-600 flex-shrink-0"></div>
+                  <p className="text-sm font-medium text-gray-800">
+                    Coffee Corner
+                  </p>
+                </li>
+              </ul>
+            </div>
+
             <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
               <h3 className="font-bold text-yellow-800 text-xs uppercase mb-2">
                 Demo Tools
@@ -869,112 +602,38 @@ export default function FeedPage() {
             </p>
 
             {/* Social Icons Grid */}
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-4 gap-y-6 gap-x-4">
               {[
-                {
-                  name: "WhatsApp",
-                  c: "#25D366",
-                  icon: (
-                    <svg viewBox="0 0 32 32" className="w-6 h-6 fill-white">
-                      <path d="M16 .5C7.6.5.5 7.6.5 16c0 2.8.7 5.4 2.1 7.8L.5 31.5l7.9-2.1c2.3 1.3 4.9 2 7.6 2 8.4 0 15.5-7.1 15.5-15.5S24.4.5 16 .5zm0 28c-2.4 0-4.7-.6-6.8-1.9L7 27l.5-2.1C5.1 22.4 4 19.3 4 16 4 9.4 9.4 4 16 4s12 5.4 12 12-5.4 12-12 12zm6.8-9c-.4-.2-2.3-1.1-2.7-1.2-.4-.1-.7-.2-1 .2-.3.4-1.2 1.5-1.5 1.8-.2.3-.4.3-.8.1-.4-.2-1.7-.6-3.2-2-1.2-1.1-2-2.3-2.2-2.7-.2-.4 0-.6.2-.8l.7-.8c.2-.2.3-.4.4-.7.1-.2 0-.5 0-.7 0-.2-.8-2-1.1-2.7-.3-.8-.6-.7-.8-.8h-.7c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2 0 1.3.9 2.6 1.1 2.9.2.3 1.9 2.9 4.6 4.1 2.7 1.3 2.7.9 3.2.8.5-.1 1.6-.6 1.8-1.2.2-.6.2-1.1.1-1.2-.1-.1-.4-.1-.8-.3z" />
-                    </svg>
-                  ),
-                },
-                {
-                  name: "Facebook",
-                  c: "#1877F2",
-                  icon: (
-                    <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
-                      <path d="M22 12a10 10 0 1 0-11.5 9.9v-7H8v-3h2.5V9.5a3.5 3.5 0 0 1 3.7-3.9c.7 0 1.5 0 2.3.1v2.7H15a1.3 1.3 0 0 0-1.5 1.4V12H18l-.5 3h-3v7A10 10 0 0 0 22 12" />
-                    </svg>
-                  ),
-                },
-                {
-                  name: "Instagram",
-                  c: "#C13584",
-                  icon: (
-                    <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
-                      <path d="M7 2C4.2 2 2 4.3 2 7v10c0 2.7 2.2 5 5 5h10c2.7 0 5-2.3 5-5V7c0-2.7-2.3-5-5-5H7zm10 2c1.7 0 3 1.4 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.6 1.3-3 3-3h10zm-5 3.4A4.6 4.6 0 1 0 16.6 12 4.6 4.6 0 0 0 12 7.4zm0 2A2.6 2.6 0 1 1 9.4 12 2.6 2.6 0 0 1 12 9.4zM17.5 6a1.1 1.1 0 1 0 1.1 1.1A1.1 1.1 0 0 0 17.5 6z" />
-                    </svg>
-                  ),
-                },
+                { name: "WhatsApp", src: "/socials/whatsapp.jpeg" },
+                { name: "Facebook", src: "/socials/facebook.jpeg" },
+                { name: "Instagram", src: "/socials/Instagram nuevo.jpeg" },
                 {
                   name: "Twitter",
-                  c: "#1DA1F2",
-                  icon: (
-                    <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
-                      <path d="M23 3a10.9 10.9 0 0 1-3.1 1A4.5 4.5 0 0 0 22.4.4a9.2 9.2 0 0 1-3 1.2A4.6 4.6 0 0 0 16.1 0c-2.5 0-4.5 2.1-4.5 4.8 0 .4.1.8.2 1.1A13 13 0 0 1 1.7.9a4.9 4.9 0 0 0-.6 2.4 4.9 4.9 0 0 0 2 4A4.2 4.2 0 0 1 .9 6v.1c0 2.3 1.6 4.3 3.7 4.8-.4.1-.8.2-1.3.2a3 3 0 0 1-.8-.1c.6 2.1 2.5 3.6 4.6 3.6A9.4 9.4 0 0 1 0 19.6a13.2 13.2 0 0 0 7.3 2.3c8.8 0 13.7-7.7 13.7-14.3 0-.2 0-.4 0-.6A10.3 10.3 0 0 0 23 3" />
-                    </svg>
-                  ),
+                  src: "/socials/New Twitter logo X 2023 Twitter X logo vector download _ Premium Vector.jpeg",
                 },
-                {
-                  name: "Telegram",
-                  c: "#0088cc",
-                  icon: (
-                    <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
-                      <path d="M9.8 16.7l-.4 5.3c.6 0 .9-.2 1.2-.5l2.8-2.7 5.8 4.2c1 .5 1.7.2 1.9-.9L24 1.5C24 .4 23.3 0 22.4.3L.8 9C-.4 9.6-.4 10.5.6 10.8l5.4 1.7 12.6-7.9c.6-.4 1-.2.6.3" />
-                    </svg>
-                  ),
-                },
-                {
-                  name: "Snapchat",
-                  c: "#FFFC00",
-                  icon: (
-                    <svg viewBox="0 0 32 32" className="w-6 h-6 fill-black">
-                      <path d="M16 2c-5.1 0-9.2 4.3-9.2 9.6 0 4.8 1.8 8.9 5.5 11.2v6.6c0 1.6 1.7 2.6 3.3 1.9 1.8-.8 3.4-2.3 5-4.4 1.6 2.1 3.2 3.6 5 4.4 1.6.7 3.3-.3 3.3-1.9v-6.6c3.7-2.3 5.5-6.4 5.5-11.2C25.2 6.3 21.1 2 16 2z" />
-                    </svg>
-                  ),
-                },
+                { name: "Telegram", src: "/socials/telegram.jpeg" },
+                { name: "Snapchat", src: "/socials/snapchat.jpeg" },
                 {
                   name: "LinkedIn",
-                  c: "#0077B5",
-                  icon: (
-                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-                      <path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0zM.5 8h4.9v16H.5zM9 8h4.7v2.2h.1c.6-1.1 2.2-2.2 4.6-2.2C22.5 8 24 10 24 14.3V24h-4.9v-9c0-2.1-.7-3.6-2.5-3.6-1.4 0-2.2 1-2.6 2-.1.2-.1.6-.1.9V24H9V8z" />
-                    </svg>
-                  ),
+                  src: "/socials/Premium Vector _ Square Linkedin Logo Isolated on White Background.jpeg",
                 },
-                {
-                  name: "TikTok",
-                  c: "#000",
-                  icon: (
-                    <svg viewBox="0 0 32 32" className="w-6 h-6 fill-white">
-                      <path d="M20.4 2h3.1c.2 1.7.9 3.2 2.1 4.4a7 7 0 0 0 4.4 2v3.2a10.8 10.8 0 0 1-6.2-2.1v9.2c0 5.6-4.3 10.3-10.4 10.3S3 24.2 3 18.6 7.3 8.2 13 8.2c1 0 2 .1 3 .4V12c-1-.5-2.2-.8-3.4-.8A6.6 6.6 0 1 0 19.6 18V2h.8z" />
-                    </svg>
-                  ),
-                },
-                {
-                  name: "Pinterest",
-                  c: "#BD081C",
-                  icon: (
-                    <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white">
-                      <path d="M12.04 2a10 10 0 0 0-3.2 19.5c-.2-1-.4-2-.4-3l1.3-5.4a.4.4 0 0 0-.1-.3 4 4 0 0 1-.2-4.4c.4-.7.8-1 1.2-1 .6 0 .9.4 1 1a6.7 6.7 0 0 1 .2 1.8c0 .4 0 1-.2 1.4-.1.4-.1.7.3.8 1.1.5 2.3-.7 2.6-2.5.4-2.6-1.1-4.6-4-4.6-3.2 0-5.3 2.4-5.3 5.3 0 1 .3 2.1 1 2.8.2.3.3.6.2.9l-.3 1.3c-.1.6-.3.7-.9.7a7.7 7.7 0 1 1 7.2 5.4 8.1 8.1 0 0 1-2.4-.4l.4-2.5c.2-.8.5-1.7.8-2.4.3-.8.6-1.6.7-2.2a4 4 0 0 0-.4-2.7 2.2 2.2 0 0 1 .4-2.5 4.8 4.8 0 0 0 .7-1.3v0z" />
-                    </svg>
-                  ),
-                },
-                {
-                  name: "YouTube",
-                  c: "#FF0000",
-                  icon: (
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="w-7 h-7 fill-white -ml-[2px]"
-                    >
-                      <path d="M23.5 6.2a3 3 0 0 0-2.1-2.2C19 3.5 12 3.5 12 3.5s-7 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.2c2.3.5 9.4.5 9.4.5s7 0 9.4-.5a3 3 0 0 0 2.1-2.2A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.7 15.3V8.7l6 3.3-6 3.3Z" />
-                    </svg>
-                  ),
-                },
+                { name: "TikTok", src: "/socials/tiktok.jpeg" },
+                { name: "Threads", src: "/socials/threads.jpeg" },
+                { name: "YouTube", src: "/socials/YouTube.jpeg" },
               ].map((item) => (
                 <button
                   key={item.name}
-                  className="flex flex-col items-center gap-1 text-xs font-medium"
+                  className="flex flex-col items-center gap-2 text-xs font-medium group"
                 >
-                  <span
-                    className="w-10 h-10 rounded-full flex items-center justify-center shadow-md"
-                    style={{ backgroundColor: item.c }}
-                  >
-                    {item.icon}
-                  </span>
+                  {/* Icon Container - Increased Size & Removed Background Color */}
+                  <div className="w-14 h-14 rounded-full overflow-hidden shadow-md group-hover:scale-110 transition-transform border border-gray-100 relative">
+                    <img
+                      src={item.src}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                      // 'object-cover' ensures the image fills the circle completely
+                    />
+                  </div>
                   <span className="text-gray-600 whitespace-nowrap">
                     {item.name}
                   </span>
@@ -982,23 +641,6 @@ export default function FeedPage() {
               ))}
             </div>
           </div>
-
-          {/* Animation */}
-          <style jsx>{`
-            @keyframes fadeUp {
-              from {
-                opacity: 0;
-                transform: translateY(20px);
-              }
-              to {
-                opacity: 1;
-                transform: translateY(0);
-              }
-            }
-            .animate-fade-in-up {
-              animation: fadeUp 0.25s ease-out;
-            }
-          `}</style>
         </div>
       )}
 
@@ -1021,6 +663,30 @@ export default function FeedPage() {
             </ul>
           </div>
 
+          <div className="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+            <h3 className="font-bold text-gray-900 mb-2">
+              Featured Businesses
+            </h3>
+            <ul className="space-y-3">
+              <li className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-red-600 flex-shrink-0"></div>
+                <p className="text-sm font-medium text-gray-800">Fashion Hub</p>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-teal-500 flex-shrink-0"></div>
+                <p className="text-sm font-medium text-gray-800">
+                  Tech Solutions
+                </p>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-yellow-600 flex-shrink-0"></div>
+                <p className="text-sm font-medium text-gray-800">
+                  Coffee Corner
+                </p>
+              </li>
+            </ul>
+          </div>
+
           {/* DEMO TOOL FOR PRESENTATION */}
           <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
             <h3 className="font-bold text-yellow-800 text-xs uppercase mb-2">
@@ -1033,11 +699,6 @@ export default function FeedPage() {
               Simulate "Near Business"
             </button>
           </div>
-
-          <SpeechBubble
-            text={`This page features a sticky top navigation with branding, a mobile menu and user profile, a dynamic masonry feed with image and Smart Video previews, a floating button for location-based business results, interactive sidebars and mobile drawer shortcuts, and a share modal for quick social sharing`}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
-          />
         </div>
 
         {/* --- Main Feed: Pinterest-Style Grid (Column 2 - Takes Max Width) --- */}
@@ -1051,7 +712,13 @@ export default function FeedPage() {
                 "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)",
             }}
           >
-            <SearchBar />
+            <SearchBar
+              ORANGE="#ff5720"
+              WHITE="#f1f1f1"
+              BLACK={"#1f1f1f"}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
 
           <div className="flex items-center justify-between mb-6 pl-4 lg:pl-0 pt-4">
@@ -1101,82 +768,62 @@ export default function FeedPage() {
 
           {/* MASONRY GRID IMPLEMENTATION */}
           <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 px-4 lg:px-0">
-            {displayItems.map((item, index) => (
-              <AnimatedItem key={item.id} delay={index * 50}>
-                <div
-                  className={`relative w-full rounded-xl overflow-hidden shadow-lg cursor-pointer group mb-4 break-inside-avoid ${item.height}`}
-                >
-                  {/* MEDIA DISPLAY AREA */}
-                  <div className="w-full h-full bg-gray-200">
-                    {item.type === "video" ? (
-                      <SmartVideo
-                        src={item.src}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <img
-                        src={item.src}
-                        alt={item.text}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    )}
-
-                    {/* Gradient Overlay for Text Readability */}
-                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
-
-                    {/* Text Content */}
-                    <div className="absolute bottom-0 left-0 p-4 w-full z-10">
-                      <p className="text-white font-semibold text-sm opacity-90 group-hover:opacity-100 transition-opacity mb-2">
-                        {item.text}
-                      </p>
-                      {item.distance && (
-                        <div className="inline-block bg-white/20 backdrop-blur-md text-white text-xs px-2 py-1 rounded-full border border-white/30">
-                          {item.distance} away
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* SHARE BUTTON - Top Left */}
-                  <button
-                    onClick={(e) => handleShare(e, item.id)}
-                    className="absolute top-2 left-2 pl-2 pr-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-105 z-20 flex items-center gap-1.5 shadow-md"
-                    style={{
-                      backgroundColor: "rgba(31, 31, 31, 0.9)",
-                      color: WHITE,
-                      backdropFilter: "blur(4px)",
-                    }}
-                    title="Share"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                      />
-                    </svg>
-                    <span className="text-xs font-bold">Share</span>
-                  </button>
-
-                  {/* TIMER - Top Right */}
+            {filteredItems.length === 0 ? (
+              <div className="text-center text-gray-600 w-full py-10 text-lg font-medium">
+                🔍 Search not found
+              </div>
+            ) : (
+              filteredItems.map((item, index) => (
+                <AnimatedItem key={item.id} delay={index * 50}>
                   <div
-                    className="absolute top-2 right-2 p-1.5 px-2.5 rounded-full z-20"
-                    style={{
-                      backgroundColor: "rgba(31, 31, 31, 0.85)",
-                      color: "#ff6b6b",
-                      backdropFilter: "blur(4px)",
-                    }}
+                    onClick={() => setSelectedMediaItem(item)}
+                    className={`relative w-full rounded-xl overflow-hidden shadow-lg cursor-pointer group mb-4 break-inside-avoid ${item.height}`}
                   >
-                    <div className="flex items-center gap-1 text-xs font-semibold">
+                    {/* MEDIA DISPLAY AREA */}
+                    <div className="w-full h-full bg-gray-200">
+                      {item.type === "video" ? (
+                        <SmartVideo
+                          src={item.src}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <img
+                          src={item.src}
+                          alt={item.text}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      )}
+
+                      {/* Gradient Overlay for Text Readability */}
+                      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
+
+                      {/* Text Content */}
+                      <div className="absolute bottom-0 left-0 p-4 w-full z-10">
+                        <p className="text-white font-semibold text-sm opacity-90 group-hover:opacity-100 transition-opacity mb-2">
+                          {item.text}
+                        </p>
+                        {item.distance && (
+                          <div className="inline-block bg-white/20 backdrop-blur-md text-white text-xs px-2 py-1 rounded-full border border-white/30">
+                            {item.distance} away
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* SHARE BUTTON - Top Left */}
+                    <button
+                      onClick={(e) => handleShare(e, item.id)}
+                      className="absolute top-2 left-2 pl-2 pr-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-105 z-20 flex items-center gap-1.5 shadow-md"
+                      style={{
+                        backgroundColor: "rgba(31, 31, 31, 0.9)",
+                        color: WHITE,
+                        backdropFilter: "blur(4px)",
+                      }}
+                      title="Share"
+                    >
                       <svg
-                        className="w-3 h-3"
+                        className="w-4 h-4"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -1185,29 +832,56 @@ export default function FeedPage() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth="2"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
                         />
                       </svg>
-                      <span>{item.timeLeft}</span>
-                    </div>
-                  </div>
+                      <span className="text-xs font-bold">Share</span>
+                    </button>
 
-                  {/* Save Button */}
-                  <button
-                    className="absolute bottom-2 right-2 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-20"
-                    style={{
-                      backgroundColor: "rgba(31, 31, 31, 0.8)",
-                      color: WHITE,
-                    }}
-                    title="Save"
-                  >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                      <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                    </svg>
-                  </button>
-                </div>
-              </AnimatedItem>
-            ))}
+                    {/* TIMER - Top Right */}
+                    <div
+                      className="absolute top-2 right-2 p-1.5 px-2.5 rounded-full z-20"
+                      style={{
+                        backgroundColor: "rgba(31, 31, 31, 0.85)",
+                        color: "#ff6b6b",
+                        backdropFilter: "blur(4px)",
+                      }}
+                    >
+                      <div className="flex items-center gap-1 text-xs font-semibold">
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <span>{item.timeLeft}</span>
+                      </div>
+                    </div>
+
+                    {/* Save Button */}
+                    <button
+                      className="absolute bottom-2 right-2 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-20"
+                      style={{
+                        backgroundColor: "rgba(31, 31, 31, 0.8)",
+                        color: WHITE,
+                      }}
+                      title="Save"
+                    >
+                      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                        <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                      </svg>
+                    </button>
+                  </div>
+                </AnimatedItem>
+              ))
+            )}
           </div>
         </div>
 
@@ -1238,30 +912,6 @@ export default function FeedPage() {
                 </span>
               ))}
             </div>
-          </div>
-
-          <div className="bg-white rounded-xl p-4 shadow-md border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-2">
-              Featured Businesses
-            </h3>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-red-600 flex-shrink-0"></div>
-                <p className="text-sm font-medium text-gray-800">Fashion Hub</p>
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-teal-500 flex-shrink-0"></div>
-                <p className="text-sm font-medium text-gray-800">
-                  Tech Solutions
-                </p>
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-yellow-600 flex-shrink-0"></div>
-                <p className="text-sm font-medium text-gray-800">
-                  Coffee Corner
-                </p>
-              </li>
-            </ul>
           </div>
         </div>
       </div>
@@ -1391,6 +1041,23 @@ export default function FeedPage() {
           </div>
         </div>
       )}
+
+      {/* FULL SCREEN MEDIA MODAL */}
+      {selectedMediaItem && (
+        <MediaModal
+          item={selectedMediaItem}
+          onClose={() => setSelectedMediaItem(null)}
+        />
+      )}
+
+      <div className="fixed bottom-10 right-30 z-50">
+        <SpeechBubble
+          text="This page features a sticky top navigation with branding, a mobile menu and user profile, a dynamic masonry feed with image and Smart Video previews, a floating button for location-based business results, interactive sidebars and mobile drawer shortcuts, and a share modal for quick social sharing"
+          color="#800080"
+          size="sm"
+          maxWidth="max-w-[150px]"
+        />
+      </div>
     </div>
   );
 }
