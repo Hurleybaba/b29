@@ -1,6 +1,21 @@
 // --- MOCK DATA WITH MEDIA ---
+
+import { distance } from "framer-motion";
+import { Interface } from "readline";
+
 // Ensure you have these files in public/media/ or update paths
-export const originalPostItems = [
+export interface OriginalPostItemsProps{
+  id: number;
+  text: string;
+  type: "image" | "video";
+  src: string;
+  height: string;
+  width: string;
+  timeLeft: string;
+  distance?: string; // Optional for nearby items
+}
+
+export const originalPostItems: OriginalPostItemsProps[] = [
   {
     id: 1,
     text: "Urban Vibes",
@@ -130,7 +145,7 @@ export const originalPostItems = [
 ];
 
 // Filtered results based on location
-export const nearbyPostItems = [
+export const nearbyPostItems: OriginalPostItemsProps[] = [
   {
     id: 101,
     text: "Nearby Cafe - 50m",

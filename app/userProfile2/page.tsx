@@ -56,7 +56,7 @@ const SAMPLE_LISTINGS: Listing[] = [
   },
 ];
 
-export default function BusinessProfilePage(): JSX.Element {
+export default function BusinessProfilePage(){
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
       <TopNav />
