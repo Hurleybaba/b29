@@ -538,19 +538,19 @@ export default function FeedPage() {
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-red-600 flex-shrink-0"></div>
+                  <div className="w-8 h-8 rounded-full bg-red-600 shrink-0"></div>
                   <p className="text-sm font-medium text-gray-800">
                     Fashion Hub
                   </p>
                 </li>
                 <li className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-teal-500 flex-shrink-0"></div>
+                  <div className="w-8 h-8 rounded-full bg-teal-500 shrink-0"></div>
                   <p className="text-sm font-medium text-gray-800">
                     Tech Solutions
                   </p>
                 </li>
                 <li className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-yellow-600 flex-shrink-0"></div>
+                  <div className="w-8 h-8 rounded-full bg-yellow-600 shrink-0"></div>
                   <p className="text-sm font-medium text-gray-800">
                     Coffee Corner
                   </p>
@@ -669,17 +669,17 @@ export default function FeedPage() {
             </h3>
             <ul className="space-y-3">
               <li className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-red-600 flex-shrink-0"></div>
+                <div className="w-8 h-8 rounded-full bg-red-600 shrink-0"></div>
                 <p className="text-sm font-medium text-gray-800">Fashion Hub</p>
               </li>
               <li className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-teal-500 flex-shrink-0"></div>
+                <div className="w-8 h-8 rounded-full bg-teal-500 shrink-0"></div>
                 <p className="text-sm font-medium text-gray-800">
                   Tech Solutions
                 </p>
               </li>
               <li className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-yellow-600 flex-shrink-0"></div>
+                <div className="w-8 h-8 rounded-full bg-yellow-600 shrink-0"></div>
                 <p className="text-sm font-medium text-gray-800">
                   Coffee Corner
                 </p>
@@ -796,7 +796,7 @@ export default function FeedPage() {
                       )}
 
                       {/* Gradient Overlay for Text Readability */}
-                      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
+                      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black/80 to-transparent pointer-events-none"></div>
 
                       {/* Text Content */}
                       <div className="absolute bottom-0 left-0 p-4 w-full z-10">
