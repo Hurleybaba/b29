@@ -17,71 +17,11 @@ import {
   Tooltip as RechartsTooltip,
   Legend,
   ResponsiveContainer,
-  TooltipProps as RechartsTooltipProps,
 } from "recharts";
+import { motion } from "framer-motion";
 import { SpeechBubble } from "@/app/components/Chat";
 
-// ... [Keep existing interfaces and component definitions: EventData, EventTypeData, etc. and AnimatedChart] ...
-// (Omitting repeated type definitions and data for brevity, assume they are still here)
-
-interface EventData {
-  name: string;
-  events: number;
-  signups: number;
-  revenue: number;
-}
-
-interface EventTypeData {
-  name: string;
-  value: number;
-  color: string;
-}
-
-interface AudienceData {
-  age: string;
-  count: number;
-}
-
-interface ConversionData {
-  stage: string;
-  count: number;
-  conversion: number;
-}
-
-interface TimePerformanceData {
-  time: string;
-  events: number;
-  attendance: number;
-}
-
-interface GeographyData {
-  area: string;
-  events: number;
-  interest: number;
-}
-
-interface SummaryStat {
-  title: string;
-  value: string;
-  change: string;
-  trend: "up" | "down";
-  icon: string;
-}
-
-interface TooltipPayloadItem {
-  name: string;
-  value: number;
-  payload: any;
-  color: string;
-  dataKey: string | number;
-}
-
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: TooltipPayloadItem[];
-  label?: string;
-}
-
+// --- Animated Chart Component ---
 const AnimatedChart = ({
   children,
   delay = 0,
@@ -120,14 +60,15 @@ const AnimatedChart = ({
   }, [delay]);
 
   return (
-    <div
+    <motion.div
       ref={ref}
-      className={`transition-all duration-1000 ease-out ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isVisible ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay: delay / 1000 }}
+      className="transition-all duration-1000 ease-out"
     >
       {children}
-    </div>
+    </motion.div>
   );
 };
 
@@ -137,7 +78,7 @@ export default function BusinessAnalysis() {
   const [dateRange, setDateRange] = useState("30days");
 
   // Event analysis data
-  const eventPerformanceData: EventData[] = [
+  const eventPerformanceData = [
     { name: "Jan", events: 4, signups: 120, revenue: 4200 },
     { name: "Feb", events: 6, signups: 145, revenue: 5300 },
     { name: "Mar", events: 5, signups: 135, revenue: 4800 },
@@ -155,7 +96,7 @@ export default function BusinessAnalysis() {
     { name: "Other", value: 5, color: "#8b5cf6" },
   ];
 
-  const audienceData: AudienceData[] = [
+  const audienceData = [
     { age: "18-24", count: 320 },
     { age: "25-34", count: 580 },
     { age: "35-44", count: 450 },
@@ -163,7 +104,7 @@ export default function BusinessAnalysis() {
     { age: "55+", count: 170 },
   ];
 
-  const conversionData: ConversionData[] = [
+  const conversionData = [
     { stage: "Profile Views", count: 1248, conversion: 100 },
     { stage: "Event Views", count: 892, conversion: 71.5 },
     { stage: "Signups", count: 86, conversion: 6.9 },
@@ -171,14 +112,14 @@ export default function BusinessAnalysis() {
     { stage: "Leads Generated", count: 24, conversion: 1.9 },
   ];
 
-  const timePerformanceData: TimePerformanceData[] = [
+  const timePerformanceData = [
     { time: "Morning", events: 15, attendance: 65 },
     { time: "Afternoon", events: 22, attendance: 75 },
     { time: "Evening", events: 18, attendance: 82 },
     { time: "Weekend", events: 25, attendance: 88 },
   ];
 
-  const geographyData: GeographyData[] = [
+  const geographyData = [
     { area: "Downtown", events: 12, interest: 85 },
     { area: "Suburbs", events: 18, interest: 72 },
     { area: "North Side", events: 9, interest: 64 },
@@ -186,13 +127,14 @@ export default function BusinessAnalysis() {
     { area: "West Side", events: 14, interest: 79 },
   ];
 
-  const summaryStats: SummaryStat[] = [
+  const summaryStats = [
     {
       title: "Total Profile Views",
       value: "1,248",
       change: "+12.5%",
       trend: "up",
       icon: "👁️",
+      color: "from-blue-500 to-cyan-500",
     },
     {
       title: "Event Signups",
@@ -200,6 +142,7 @@ export default function BusinessAnalysis() {
       change: "+8.2%",
       trend: "up",
       icon: "📋",
+      color: "from-green-500 to-emerald-500",
     },
     {
       title: "Conversion Rate",
@@ -207,6 +150,7 @@ export default function BusinessAnalysis() {
       change: "+2.3%",
       trend: "up",
       icon: "📈",
+      color: "from-purple-500 to-violet-500",
     },
     {
       title: "Avg. Event Rating",
@@ -214,6 +158,7 @@ export default function BusinessAnalysis() {
       change: "+0.3",
       trend: "up",
       icon: "⭐",
+      color: "from-yellow-500 to-orange-500",
     },
     {
       title: "Lead Generation",
@@ -221,6 +166,7 @@ export default function BusinessAnalysis() {
       change: "+18.4%",
       trend: "up",
       icon: "🎯",
+      color: "from-red-500 to-pink-500",
     },
     {
       title: "Revenue Impact",
@@ -228,18 +174,26 @@ export default function BusinessAnalysis() {
       change: "+15.2%",
       trend: "up",
       icon: "💰",
+      color: "from-indigo-500 to-blue-500",
     },
   ];
 
-  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
-          <p className="font-semibold text-gray-900 mb-2">{label}</p>
-          {payload.map((entry, index: number) => (
-            <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {entry.name}: {entry.value}
-            </p>
+        <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-2xl border border-orange-200/50">
+          <p className="font-bold text-gray-900 mb-2 text-sm">{label}</p>
+          {payload.map((entry: any, index: number) => (
+            <div key={index} className="flex items-center gap-2 mb-1">
+              <div 
+                className="w-2 h-2 rounded-full" 
+                style={{ backgroundColor: entry.color }}
+              />
+              <span className="text-sm font-medium text-gray-700">{entry.name}:</span>
+              <span className="text-sm font-bold" style={{ color: entry.color }}>
+                {entry.value}
+              </span>
+            </div>
           ))}
         </div>
       );
@@ -261,7 +215,7 @@ export default function BusinessAnalysis() {
         fill="white"
         textAnchor={cx > x ? "start" : "end"}
         dominantBaseline="central"
-        className="text-xs font-medium"
+        className="text-xs font-bold drop-shadow-lg"
       >
         {`${name}: ${value}%`}
       </text>
@@ -269,13 +223,19 @@ export default function BusinessAnalysis() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 md:flex">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 md:flex"
+    >
       {/* Mobile Header */}
-      <div className="md:hidden bg-white border-b border-gray-200 p-4 flex justify-between items-center sticky top-0 z-30">
-        <span className="text-xl font-bold text-[#ff5720]">B23 Business</span>
+      <div className="md:hidden bg-white/70 backdrop-blur-lg border-b border-orange-200/50 p-4 flex justify-between items-center sticky top-0 z-30 shadow-sm">
+        <span className="text-xl font-bold text-[#ff5720] tracking-tight">
+          B23 Business
+        </span>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="text-gray-600 focus:outline-none"
+          className="text-gray-700 focus:outline-none"
         >
           <svg
             className="w-6 h-6"
@@ -305,55 +265,70 @@ export default function BusinessAnalysis() {
       {/* Sidebar Overlay (Mobile) */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden"
           onClick={() => setIsOpen(false)}
-        ></div>
+        />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col justify-between transition-transform duration-300 transform 
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-        md:translate-x-0 md:sticky md:top-0 md:h-screen`}
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white/70 backdrop-blur-xl border-r border-orange-200/60 shadow-lg flex flex-col justify-between transition-transform duration-300 transform 
+          ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+          md:translate-x-0 md:sticky md:top-0 md:h-screen`}
       >
         <div>
-          <div className="p-6">
-            <span className="text-xl font-bold text-[#ff5720]">
+          <div className="p-6 border-b border-orange-200/60">
+            <span className="text-xl font-bold text-orange-600">
               B23 Business
             </span>
           </div>
+
           <nav className="mt-6 px-4 space-y-2">
-            <Link
-              href="/pages/businessDashboard"
-              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-orange-50 rounded-lg font-medium"
-            >
-              Overview
-            </Link>
-            <Link
-              href="/pages/businessEvents"
-              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-orange-50 rounded-lg font-medium"
-            >
-              My Events
-            </Link>
-            <Link
-              href="/pages/businessAnalysis"
-              className="flex items-center gap-3 px-4 py-3 hover:bg-orange-50 text-[#ff5720] rounded-lg font-medium"
-            >
-              Analytics
-            </Link>
-            <Link
-              href="/pages/businessSettings"
-              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-orange-50 rounded-lg font-medium"
-            >
-              Settings
-            </Link>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                href="/pages/businessDashboard"
+                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-100 rounded-lg transition"
+              >
+                Overview
+              </Link>
+            </motion.div>
+            
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                href="/pages/businessEvents"
+                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-100 rounded-lg transition"
+              >
+                My Events
+              </Link>
+            </motion.div>
+            
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                href="/pages/businessAnalysis"
+                className="flex items-center gap-3 px-4 py-3 text-white bg-gradient-to-r from-orange-500 to-red-500 rounded-lg shadow-md"
+              >
+                Analytics
+              </Link>
+            </motion.div>
+            
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                href="/pages/businessSettings"
+                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-100 rounded-lg transition"
+              >
+                Settings
+              </Link>
+            </motion.div>
           </nav>
         </div>
 
         {/* Bottom Nav Items */}
-        <div className="p-4 border-t border-gray-100 space-y-4 bg-white">
-          {/* Subscription Ad Card - Updated to Orange Theme */}
-          <div className="rounded-xl bg-gradient-to-br from-[#ff5720] to-orange-700 p-4 text-white shadow-lg relative overflow-hidden group">
+        <div className="p-4 border-t border-orange-200/60">
+          {/* Pro Card */}
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            className="rounded-xl bg-gradient-to-br from-[#ff5720] to-orange-700 p-4 text-white shadow-lg relative overflow-hidden group mb-6"
+          >
             <div className="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white opacity-10 rounded-full blur-xl group-hover:scale-125 transition-transform duration-700"></div>
             <h3 className="font-black text-lg italic tracking-wider mb-1">
               PRO PLAN
@@ -371,20 +346,20 @@ export default function BusinessAnalysis() {
             >
               Manage Subscription
             </Link>
-          </div>
+          </motion.div>
 
           <div className="space-y-2">
             <Link
               href="/pages/businessProfile"
-              className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition"
+              className="block text-sm text-gray-700 hover:text-orange-600 transition"
             >
               View Public Profile
             </Link>
             <Link
               href="/"
-              className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition"
+              className="block text-sm text-gray-700 hover:text-orange-600 transition"
             >
-              &larr; Back to Home
+              ← Back to Home
             </Link>
           </div>
         </div>
@@ -393,90 +368,137 @@ export default function BusinessAnalysis() {
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-8">
         {/* Header */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <motion.header
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6"
+        >
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               Business Analytics
             </h1>
-            <p className="text-gray-500">
+            <p className="text-gray-600 mt-2">
               Track performance, insights, and growth metrics
             </p>
           </div>
 
-          <div className="flex gap-3 w-full md:w-auto">
-            <select
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1453A0] focus:border-transparent w-full md:w-auto"
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <motion.div whileHover={{ scale: 1.02 }} className="relative">
+              <select
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
+                className="pl-4 pr-10 py-3 border border-orange-200 rounded-xl bg-white/70 backdrop-blur-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent w-full appearance-none shadow-sm"
+              >
+                <option value="7days">Last 7 Days</option>
+                <option value="30days">Last 30 Days</option>
+                <option value="90days">Last 90 Days</option>
+                <option value="1year">Last Year</option>
+              </select>
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </motion.div>
+            
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-gradient-to-r from-[#1f1f1f] to-gray-800 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center gap-2"
             >
-              <option value="7days">Last 7 Days</option>
-              <option value="30days">Last 30 Days</option>
-              <option value="90days">Last 90 Days</option>
-              <option value="1year">Last Year</option>
-            </select>
-            <button className="px-4 py-2.5 bg-[#1f1f1f] hover:bg-gray-800 text-white rounded-lg font-medium transition flex items-center gap-2 w-full md:w-auto justify-center">
-              📊 Export Report
-            </button>
+              <span className="text-lg">📊</span>
+              Export Report
+            </motion.button>
           </div>
-        </header>
+        </motion.header>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-8 overflow-x-auto">
+        <div className="flex gap-2 mb-8 overflow-x-auto pb-3">
           {["overview", "events", "audience", "conversion", "geography"].map(
             (tab) => (
-              <button
+              <motion.button
                 key={tab}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveTab(tab)}
-                className={`px-6 py-3 rounded-lg font-medium whitespace-nowrap transition ${
+                className={`px-6 py-3 rounded-xl font-medium whitespace-nowrap transition-all duration-300 ${
                   activeTab === tab
-                    ? "bg-[#ff5720] text-white"
-                    : "bg-white text-gray-700  hover:bg-orange-50"
+                    ? "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg"
+                    : "bg-white/70 backdrop-blur-sm text-gray-700 hover:bg-orange-50 shadow-sm"
                 }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
+              </motion.button>
             )
           )}
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           {summaryStats.map((stat, index) => (
-            <AnimatedChart key={index} delay={index * 100}>
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500">{stat.title}</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">
-                      {stat.value}
-                    </p>
-                    <div
-                      className={`flex items-center gap-1 mt-2 text-sm ${
-                        stat.trend === "up" ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      <span>{stat.trend === "up" ? "↑" : "↓"}</span>
-                      <span>{stat.change}</span>
-                      <span>from last period</span>
-                    </div>
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ scale: 1.03, y: -5 }}
+              className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-orange-200/40 hover:shadow-orange-300/40 transition-all duration-300 overflow-hidden group"
+            >
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl shadow-md`}>
+                    {stat.icon}
                   </div>
-                  <div className="text-2xl">{stat.icon}</div>
+                  <span className={`text-sm font-bold px-3 py-1 rounded-full ${
+                    stat.trend === "up" 
+                      ? "bg-green-100 text-green-700" 
+                      : "bg-red-100 text-red-700"
+                  }`}>
+                    {stat.trend === "up" ? "↑" : "↓"} {stat.change}
+                  </span>
+                </div>
+                
+                <p className="text-sm text-gray-600 mb-2">{stat.title}</p>
+                <p className="text-3xl font-bold text-gray-900 mb-3">{stat.value}</p>
+                
+                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: "70%" }}
+                    transition={{ delay: index * 0.1 + 0.5, duration: 1 }}
+                    className={`h-full rounded-full bg-gradient-to-r ${stat.color}`}
+                  />
                 </div>
               </div>
-            </AnimatedChart>
+            </motion.div>
           ))}
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
           {/* Event Performance Chart */}
           <AnimatedChart delay={100}>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-gray-900 mb-6">
-                Event Performance Trends
-              </h3>
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-orange-200/40 p-6 hover:shadow-orange-300/40 transition-all duration-300">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-bold text-gray-900">
+                  Event Performance Trends
+                </h3>
+                <span className="text-xs font-medium px-3 py-1 rounded-full bg-orange-100 text-orange-700">
+                  Live Data
+                </span>
+              </div>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={eventPerformanceData}>
+                  <defs>
+                    <linearGradient id="colorSignups" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#1453A0" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#1453A0" stopOpacity={0.1} />
+                    </linearGradient>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ff5720" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#ff5720" stopOpacity={0.1} />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="name" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
@@ -485,16 +507,14 @@ export default function BusinessAnalysis() {
                     type="monotone"
                     dataKey="signups"
                     stroke="#1453A0"
-                    fill="#1453A0"
-                    fillOpacity={0.1}
+                    fill="url(#colorSignups)"
                     name="Signups"
                   />
                   <Area
                     type="monotone"
                     dataKey="revenue"
                     stroke="#ff5720"
-                    fill="#ff5720"
-                    fillOpacity={0.1}
+                    fill="url(#colorRevenue)"
                     name="Revenue ($)"
                   />
                 </AreaChart>
@@ -504,8 +524,8 @@ export default function BusinessAnalysis() {
 
           {/* Event Types Distribution */}
           <AnimatedChart delay={200}>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-gray-900 mb-6">
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-orange-200/40 p-6 hover:shadow-orange-300/40 transition-all duration-300">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">
                 Event Types Distribution
               </h3>
               <ResponsiveContainer width="100%" height={300}>
@@ -526,6 +546,13 @@ export default function BusinessAnalysis() {
                   </Pie>
                   <RechartsTooltip
                     formatter={(value, name) => [`${value}%`, name]}
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      backdropFilter: 'blur(10px)',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255, 152, 0, 0.2)',
+                      boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                    }}
                   />
                   <Legend />
                 </PieChart>
@@ -535,8 +562,8 @@ export default function BusinessAnalysis() {
 
           {/* Audience Demographics */}
           <AnimatedChart delay={300}>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-gray-900 mb-6">
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-orange-200/40 p-6 hover:shadow-orange-300/40 transition-all duration-300">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">
                 Audience Age Distribution
               </h3>
               <ResponsiveContainer width="100%" height={300}>
@@ -544,8 +571,13 @@ export default function BusinessAnalysis() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="age" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
-                  <RechartsTooltip />
-                  <Bar dataKey="count" fill="#ff5720" radius={[4, 4, 0, 0]} />
+                  <RechartsTooltip content={<CustomTooltip />} />
+                  <Bar 
+                    dataKey="count" 
+                    fill="#ff5720" 
+                    radius={[8, 8, 0, 0]}
+                    className="hover:opacity-80 transition-opacity"
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -553,28 +585,38 @@ export default function BusinessAnalysis() {
 
           {/* Conversion Funnel */}
           <AnimatedChart delay={400}>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-gray-900 mb-6">
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-orange-200/40 p-6 hover:shadow-orange-300/40 transition-all duration-300">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">
                 Conversion Funnel
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {conversionData.map((stage, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium text-gray-700">
-                        {stage.stage}
-                      </span>
-                      <span className="text-gray-600">
-                        {stage.count} ({stage.conversion}%)
-                      </span>
+                  <motion.div 
+                    key={index}
+                    whileHover={{ x: 10 }}
+                    className="space-y-3 group"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-100 to-orange-50 flex items-center justify-center text-orange-600 font-bold shadow-sm">
+                          {index + 1}
+                        </div>
+                        <span className="font-medium text-gray-900">{stage.stage}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-gray-900">{stage.count}</div>
+                        <div className="text-sm text-gray-500">({stage.conversion}%)</div>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-[#ff5720] h-2 rounded-full transition-all duration-1000 ease-out"
-                        style={{ width: `${stage.conversion}%` }}
+                    <div className="relative h-3 bg-gray-100 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${stage.conversion}%` }}
+                        transition={{ delay: index * 0.2, duration: 1 }}
+                        className="absolute inset-0 bg-gradient-to-r from-[#ff5720] to-orange-400 rounded-full group-hover:opacity-90"
                       />
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -582,8 +624,8 @@ export default function BusinessAnalysis() {
 
           {/* Time Performance */}
           <AnimatedChart delay={500}>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-gray-900 mb-6">
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-orange-200/40 p-6 hover:shadow-orange-300/40 transition-all duration-300">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">
                 Time-based Performance
               </h3>
               <ResponsiveContainer width="100%" height={300}>
@@ -591,18 +633,18 @@ export default function BusinessAnalysis() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="time" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
-                  <RechartsTooltip />
+                  <RechartsTooltip content={<CustomTooltip />} />
                   <Bar
                     dataKey="events"
                     fill="#1453A0"
                     name="Events"
-                    radius={[4, 4, 0, 0]}
+                    radius={[8, 8, 0, 0]}
                   />
                   <Bar
                     dataKey="attendance"
                     fill="#ff8a50"
                     name="Avg. Attendance %"
-                    radius={[4, 4, 0, 0]}
+                    radius={[8, 8, 0, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -611,8 +653,8 @@ export default function BusinessAnalysis() {
 
           {/* Geographic Interest */}
           <AnimatedChart delay={600}>
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-gray-900 mb-6">
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-orange-200/40 p-6 hover:shadow-orange-300/40 transition-all duration-300">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">
                 Geographic Interest Levels
               </h3>
               <ResponsiveContainer width="100%" height={300}>
@@ -620,18 +662,18 @@ export default function BusinessAnalysis() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="area" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
-                  <RechartsTooltip />
+                  <RechartsTooltip content={<CustomTooltip />} />
                   <Bar
                     dataKey="events"
                     fill="#1f1f1f"
                     name="Events Held"
-                    radius={[4, 4, 0, 0]}
+                    radius={[8, 8, 0, 0]}
                   />
                   <Bar
                     dataKey="interest"
                     fill="#10b981"
                     name="Interest Score"
-                    radius={[4, 4, 0, 0]}
+                    radius={[8, 8, 0, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -641,30 +683,64 @@ export default function BusinessAnalysis() {
 
         {/* Recommendations Section */}
         <AnimatedChart delay={700}>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-            <h3 className="font-bold text-gray-900 mb-4">
-              Insights & Recommendations
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <h4 className="font-semibold text-[#1453A0] mb-2">
-                  📈 Top Performing
-                </h4>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Evening events have 15% higher attendance</li>
-                  <li>• Open House events generate 45% of all leads</li>
-                  <li>• Suburbs show highest growth potential</li>
-                </ul>
+          <div className="bg-gradient-to-r from-white/70 to-orange-50/50 backdrop-blur-xl rounded-2xl shadow-lg border border-orange-200/40 overflow-hidden mb-10">
+            <div className="p-8">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center shadow-lg">
+                  <span className="text-2xl">💡</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Intelligent Insights</h3>
+                  <p className="text-gray-600">AI-powered recommendations based on your data</p>
+                </div>
               </div>
-              <div className="p-4 bg-orange-50 rounded-lg">
-                <h4 className="font-semibold text-[#ff5720] mb-2">
-                  🎯 Opportunities
-                </h4>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Increase social media promotion by 30%</li>
-                  <li>• Target 25-34 age group more effectively</li>
-                  <li>• Expand weekend event offerings</li>
-                </ul>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <h4 className="font-bold text-gray-900 text-lg flex items-center gap-2">
+                    <span className="text-blue-600">📈</span>
+                    Top Performing Areas
+                  </h4>
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-3 p-4 bg-white/50 rounded-xl border border-blue-100 shadow-sm">
+                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold">1</div>
+                      <div>
+                        <p className="font-medium text-gray-800">Evening events have 15% higher attendance</p>
+                        <p className="text-sm text-gray-500 mt-1">Consider scheduling more events in the evening</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3 p-4 bg-white/50 rounded-xl border border-blue-100 shadow-sm">
+                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold">2</div>
+                      <div>
+                        <p className="font-medium text-gray-800">Open House events generate 45% of all leads</p>
+                        <p className="text-sm text-gray-500 mt-1">Focus marketing efforts on Open House events</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="space-y-4">
+                  <h4 className="font-bold text-gray-900 text-lg flex items-center gap-2">
+                    <span className="text-orange-600">🎯</span>
+                    Actionable Opportunities
+                  </h4>
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-3 p-4 bg-white/50 rounded-xl border border-orange-100 shadow-sm">
+                      <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold">1</div>
+                      <div>
+                        <p className="font-medium text-gray-800">Increase social media promotion by 30%</p>
+                        <p className="text-sm text-gray-500 mt-1">Projected to increase signups by 25%</p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3 p-4 bg-white/50 rounded-xl border border-orange-100 shadow-sm">
+                      <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold">2</div>
+                      <div>
+                        <p className="font-medium text-gray-800">Target 25-34 age group more effectively</p>
+                        <p className="text-sm text-gray-500 mt-1">Highest conversion rate among all age groups</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -672,34 +748,42 @@ export default function BusinessAnalysis() {
 
         {/* Quick Stats */}
         <AnimatedChart delay={800}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-[#f1f1f1] p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Best Day</p>
-              <p className="text-lg font-bold text-[#1f1f1f]">Saturday</p>
-            </div>
-            <div className="bg-[#f1f1f1] p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Peak Time</p>
-              <p className="text-lg font-bold text-[#1f1f1f]">6-8 PM</p>
-            </div>
-            <div className="bg-[#f1f1f1] p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Avg. Cost/Lead</p>
-              <p className="text-lg font-bold text-[#1f1f1f]">$42</p>
-            </div>
-            <div className="bg-[#f1f1f1] p-4 rounded-lg">
-              <p className="text-sm text-gray-600">ROI</p>
-              <p className="text-lg font-bold text-[#1f1f1f]">3.2x</p>
+          <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-orange-200/40 p-8">
+            <h3 className="text-lg font-bold text-gray-900 mb-8">Key Performance Indicators</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                { label: "Best Day", value: "Saturday", icon: "📅", color: "#ff5720" },
+                { label: "Peak Time", value: "6-8 PM", icon: "⏰", color: "#10b981" },
+                { label: "Avg. Cost/Lead", value: "$42", icon: "💰", color: "#3b82f6" },
+                { label: "ROI", value: "3.2x", icon: "📈", color: "#8b5cf6" },
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="text-center p-6 rounded-xl hover:bg-white/50 transition-all duration-300 cursor-pointer"
+                >
+                  <div 
+                    className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center text-3xl shadow-lg"
+                    style={{ backgroundColor: `${item.color}20` }}
+                  >
+                    {item.icon}
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">{item.label}</p>
+                  <p className="text-xl font-bold text-gray-900">{item.value}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </AnimatedChart>
-      </main>
 
-      {/* SPEECH BUBBLE */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <SpeechBubble
-          text="Dive into your business analytics. View charts for event performance, audience demographics, and conversion funnels."
-          color="#800080"
-        />
-      </div>
-    </div>
+        {/* Speech Bubble */}
+        <div className="fixed bottom-6 right-6 z-50">
+          <SpeechBubble
+            text="Dive into your business analytics. View charts for event performance, audience demographics, and conversion funnels."
+            color="#800080"
+          />
+        </div>
+      </main>
+    </motion.div>
   );
 }
