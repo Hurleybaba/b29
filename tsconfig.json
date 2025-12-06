@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "app/components/templates/Corporate.js", "app/components/templates/Minimalist.js"  ],
   "exclude": ["node_modules"]
 }

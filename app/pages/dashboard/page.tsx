@@ -1325,7 +1325,7 @@ export default function FeedPage() {
       )}
 
       {/* Helper Speech Bubble */}
-      <div className="fixed bottom-10 left-10 z-50 hidden xl:block">
+      <div className="fixed bottom-0 left-50 z-50 hidden xl:block">
         <SpeechBubble
           text="The FeedPage component presents a professional social discovery platform featuring a modular bento-grid interface, integrated proximity-based scanning technology, and interactive media engagement tools designed to optimize user discovery and content interaction through location-aware functionality"
           color="#800080"
