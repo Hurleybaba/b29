@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { usePathname } from "next/navigation"; // Import this hook
+import { usePathname } from "next/navigation"; 
 import { motion } from "framer-motion";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname(); // Get current path
+  const pathname = usePathname(); 
 
-  // Define all navigation items in one array
   const navLinks = [
     { href: "/pages/businessDashboard", label: "Overview" },
     { href: "/pages/businessEvents", label: "My Events" },
@@ -29,12 +28,7 @@ export default function Sidebar() {
           onClick={() => setIsOpen(!isOpen)}
           className="text-gray-700 focus:outline-none"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {isOpen ? (
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             ) : (
@@ -67,9 +61,7 @@ export default function Sidebar() {
 
           <nav className="mt-6 px-4 space-y-2">
             {navLinks.map((nav, i) => {
-              // Check if the current path matches the link href
               const isActive = pathname === nav.href;
-
               return (
                 <motion.div 
                   key={i} 
@@ -80,8 +72,8 @@ export default function Sidebar() {
                     href={nav.href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
                       isActive
-                        ? "text-white bg-gradient-to-r from-orange-500 to-red-500 shadow-md" // Active Styles
-                        : "text-gray-700 hover:bg-orange-100" // Inactive Styles
+                        ? "text-white bg-gradient-to-r from-orange-500 to-red-500 shadow-md"
+                        : "text-gray-700 hover:bg-orange-100"
                     }`}
                   >
                     {nav.label}
@@ -93,37 +85,42 @@ export default function Sidebar() {
         </div>
 
         {/* ================= SIDEBAR BOTTOM ================= */}
-        <div className="p-4 border-t border-orange-200/60">
-          {/* <motion.div
-            whileHover={{ scale: 1.03 }}
-            className="rounded-xl bg-gradient-to-br from-[#ff5720] to-orange-700 p-4 text-white shadow-lg relative overflow-hidden group mb-10"
+        <div className="p-4 border-t border-orange-200/60 space-y-4">
+          
+          {/* CHANGE: Converted to a Link component. 
+             Added hover effects (border color & subtle shadow) to indicate clickability.
+          */}
+          <Link 
+            href="/pages/subscription"
+            className="px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl flex items-center gap-3 hover:bg-orange-50 hover:border-orange-200 transition group cursor-pointer"
           >
-            <div className="absolute top-0 right-0 mt-4 -mr-4 w-20 h-20 bg-white opacity-10 rounded-full blur-xl group-hover:scale-125 transition-transform duration-700"></div>
-            <h3 className="font-black text-lg italic tracking-wider mb-1">
-              PRO PLAN
-            </h3>
-            <p className="text-xs text-orange-100 mb-3 font-medium">
-              Unlock full potential
-            </p>
-            <ul className="text-[10px] text-orange-100 mb-4 space-y-1">
-              <li>✨ Advanced Analytics</li>
-              <li>🚀 Boosted Events</li>
-            </ul>
-            <Link
-              href="/pages/subscription"
-              className="block w-full py-2 bg-white text-[#ff5720] text-xs font-bold text-center rounded-lg shadow hover:bg-gray-50 transition"
-            >
-              Manage Subscription
+             <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-[#ff5720]">
+                {/* Crown Icon */}
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+             </div>
+             <div className="flex-1">
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Current Plan</p>
+                <p className="text-sm font-bold text-gray-800 group-hover:text-[#ff5720] transition-colors">Pro Business</p>
+             </div>
+             {/* Subtle Chevron that appears on hover to hint navigation */}
+             <svg className="w-4 h-4 text-orange-300 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+             </svg>
+          </Link>
+
+          <div className="space-y-1">
+            <Link href="/pages/businessProfile" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 hover:text-orange-600 transition group">
+              <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              View Public Profile
             </Link>
-          </motion.div> */}
 
-          <Link href="/pages/businessProfile" className="block text-sm text-gray-700 hover:text-orange-600 mb-2">
-            View Public Profile
-          </Link>
-
-          <Link href="/" className="block text-sm text-gray-700 hover:text-orange-600">
-            ← Back to Home
-          </Link>
+            <Link href="/" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 hover:text-orange-600 transition group">
+              <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+              Back to Home
+            </Link>
+          </div>
         </div>
       </aside>
     </>
