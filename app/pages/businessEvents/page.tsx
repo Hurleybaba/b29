@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { SpeechBubble } from "@/app/components/Chat";
+import Sidebar from "@/app/components/BusinessNavbar";
 
 export default function BusinessEventsPage() {
   const [activeTab, setActiveTab] = useState("all");
@@ -111,84 +112,7 @@ export default function BusinessEventsPage() {
       )}
 
       {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col justify-between transition-transform duration-300 transform 
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-        md:translate-x-0 md:sticky md:top-0 md:h-screen`}
-      >
-        <div>
-          <div className="p-6">
-            <span className="text-xl font-bold text-[#ff5720]">
-              B23 Business
-            </span>
-          </div>
-          <nav className="mt-6 px-4 space-y-2">
-            <Link
-              href="/pages/businessDashboard"
-              className="flex items-center gap-3 px-4 text-gray-600 py-3 hover:bg-orange-50 rounded-lg font-medium"
-            >
-              Overview
-            </Link>
-            <Link
-              href="/pages/businessEvents"
-              className="flex items-center gap-3 px-4 py-3  text-[#ff5720] hover:bg-orange-50 rounded-lg font-medium"
-            >
-              My Events
-            </Link>
-            <Link
-              href="/pages/businessAnalysis"
-              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-orange-50 rounded-lg font-medium"
-            >
-              Analytics
-            </Link>
-            <Link
-              href="/pages/businessSettings"
-              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-orange-50 rounded-lg font-medium"
-            >
-              Settings
-            </Link>
-          </nav>
-        </div>
-
-        {/* Bottom Nav Items */}
-        <div className="p-4 border-t border-gray-100 space-y-4 bg-white">
-          {/* Subscription Ad Card - Updated to Orange Theme */}
-          <div className="rounded-xl bg-gradient-to-br from-[#ff5720] to-orange-700 p-4 text-white shadow-lg relative overflow-hidden group">
-            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white opacity-10 rounded-full blur-xl group-hover:scale-125 transition-transform duration-700"></div>
-            <h3 className="font-black text-lg italic tracking-wider mb-1">
-              PRO PLAN
-            </h3>
-            <p className="text-xs text-orange-100 mb-3 font-medium">
-              Unlock full potential
-            </p>
-            <ul className="text-[10px] text-orange-100 mb-4 space-y-1">
-              <li className="flex items-center gap-1">✨ Advanced Analytics</li>
-              <li className="flex items-center gap-1">🚀 Boosted Events</li>
-            </ul>
-            <Link
-              href="/pages/subscription"
-              className="block w-full py-2 bg-white text-[#ff5720] text-xs font-bold text-center rounded-lg shadow hover:bg-gray-50 transition"
-            >
-              Manage Subscription
-            </Link>
-          </div>
-
-          <div className="space-y-2">
-            <Link
-              href="/pages/businessProfile"
-              className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition"
-            >
-              View Public Profile
-            </Link>
-            <Link
-              href="/"
-              className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition"
-            >
-              &larr; Back to Home
-            </Link>
-          </div>
-        </div>
-      </aside>
+      <Sidebar />
 
       <main className="flex-1 p-4 md:p-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">

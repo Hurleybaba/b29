@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Sidebar from "@/app/components/BusinessNavbar";
 
 export default function BusinessDashboard() {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,84 +49,7 @@ export default function BusinessDashboard() {
       )}
 
       {/* ================= SIDEBAR ================= */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white/70 backdrop-blur-xl border-r border-orange-200/60 shadow-lg flex flex-col justify-between transition-transform duration-300 transform 
-          ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-          md:translate-x-0 md:sticky md:top-0 md:h-screen`}
-      >
-        <div>
-          <div className="p-6 border-b border-orange-200/60">
-            <span className="text-xl font-bold text-orange-600">
-              B23 Business
-            </span>
-          </div>
-
-          <nav className="mt-6 px-4 space-y-2">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-              <Link
-                href="/pages/businessDashboard"
-                className="flex items-center gap-3 px-4 py-3 text-white bg-gradient-to-r from-orange-500 to-red-500 rounded-lg shadow-md"
-              >
-                Overview
-              </Link>
-            </motion.div>
-
-            {[
-              { href: "/pages/businessEvents", label: "My Events" },
-              { href: "/pages/businessAnalysis", label: "Analytics" },
-              { href: "/pages/businessSettings", label: "Settings" },
-            ].map((nav, i) => (
-              <motion.div key={i} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-                <Link
-                  href={nav.href}
-                  className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-100 rounded-lg transition"
-                >
-                  {nav.label}
-                </Link>
-              </motion.div>
-            ))}
-          </nav>
-        </div>
-
-        {/* ================= SIDEBAR BOTTOM (PRO CARD) ================= */}
-        <div className="p-4 border-t border-orange-200/60">
-
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            className="rounded-xl bg-gradient-to-br from-[#ff5720] to-orange-700 p-4 text-white shadow-lg relative overflow-hidden group mb-10"
-          >
-            <div className="absolute top-0 right-0 mt-4 -mr-4 w-20 h-20 bg-white opacity-10 rounded-full blur-xl group-hover:scale-125 transition-transform duration-700"></div>
-
-            <h3 className="font-black text-lg italic tracking-wider mb-1">
-              PRO PLAN
-            </h3>
-
-            <p className="text-xs text-orange-100 mb-3 font-medium">
-              Unlock full potential
-            </p>
-
-            <ul className="text-[10px] text-orange-100 mb-4 space-y-1">
-              <li>✨ Advanced Analytics</li>
-              <li>🚀 Boosted Events</li>
-            </ul>
-
-            <Link
-              href="/pages/subscription"
-              className="block w-full py-2 bg-white text-[#ff5720] text-xs font-bold text-center rounded-lg shadow hover:bg-gray-50 transition"
-            >
-              Manage Subscription
-            </Link>
-          </motion.div>
-
-          <Link href="/pages/businessProfile" className="block text-sm text-gray-700 hover:text-orange-600 mb-2">
-            View Public Profile
-          </Link>
-
-          <Link href="/" className="block text-sm text-gray-700 hover:text-orange-600">
-            ← Back to Home
-          </Link>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* ================= MAIN CONTENT ================= */}
       <main className="flex-1 p-4 md:p-8">
