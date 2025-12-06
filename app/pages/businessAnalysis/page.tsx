@@ -20,6 +20,7 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 import { SpeechBubble } from "@/app/components/Chat";
+import Sidebar from "@/app/components/BusinessNavbar";
 
 // --- Animated Chart Component ---
 const AnimatedChart = ({
@@ -185,12 +186,17 @@ export default function BusinessAnalysis() {
           <p className="font-bold text-gray-900 mb-2 text-sm">{label}</p>
           {payload.map((entry: any, index: number) => (
             <div key={index} className="flex items-center gap-2 mb-1">
-              <div 
-                className="w-2 h-2 rounded-full" 
+              <div
+                className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: entry.color }}
               />
-              <span className="text-sm font-medium text-gray-700">{entry.name}:</span>
-              <span className="text-sm font-bold" style={{ color: entry.color }}>
+              <span className="text-sm font-medium text-gray-700">
+                {entry.name}:
+              </span>
+              <span
+                className="text-sm font-bold"
+                style={{ color: entry.color }}
+              >
                 {entry.value}
               </span>
             </div>
@@ -270,100 +276,7 @@ export default function BusinessAnalysis() {
         />
       )}
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white/70 backdrop-blur-xl border-r border-orange-200/60 shadow-lg flex flex-col justify-between transition-transform duration-300 transform 
-          ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-          md:translate-x-0 md:sticky md:top-0 md:h-screen`}
-      >
-        <div>
-          <div className="p-6 border-b border-orange-200/60">
-            <span className="text-xl font-bold text-orange-600">
-              B23 Business
-            </span>
-          </div>
-
-          <nav className="mt-6 px-4 space-y-2">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-              <Link
-                href="/pages/businessDashboard"
-                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-100 rounded-lg transition"
-              >
-                Overview
-              </Link>
-            </motion.div>
-            
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-              <Link
-                href="/pages/businessEvents"
-                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-100 rounded-lg transition"
-              >
-                My Events
-              </Link>
-            </motion.div>
-            
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-              <Link
-                href="/pages/businessAnalysis"
-                className="flex items-center gap-3 px-4 py-3 text-white bg-gradient-to-r from-orange-500 to-red-500 rounded-lg shadow-md"
-              >
-                Analytics
-              </Link>
-            </motion.div>
-            
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-              <Link
-                href="/pages/businessSettings"
-                className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-orange-100 rounded-lg transition"
-              >
-                Settings
-              </Link>
-            </motion.div>
-          </nav>
-        </div>
-
-        {/* Bottom Nav Items */}
-        <div className="p-4 border-t border-orange-200/60">
-          {/* Pro Card */}
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            className="rounded-xl bg-gradient-to-br from-[#ff5720] to-orange-700 p-4 text-white shadow-lg relative overflow-hidden group mb-6"
-          >
-            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white opacity-10 rounded-full blur-xl group-hover:scale-125 transition-transform duration-700"></div>
-            <h3 className="font-black text-lg italic tracking-wider mb-1">
-              PRO PLAN
-            </h3>
-            <p className="text-xs text-orange-100 mb-3 font-medium">
-              Unlock full potential
-            </p>
-            <ul className="text-[10px] text-orange-100 mb-4 space-y-1">
-              <li className="flex items-center gap-1">✨ Advanced Analytics</li>
-              <li className="flex items-center gap-1">🚀 Boosted Events</li>
-            </ul>
-            <Link
-              href="/pages/subscription"
-              className="block w-full py-2 bg-white text-[#ff5720] text-xs font-bold text-center rounded-lg shadow hover:bg-gray-50 transition"
-            >
-              Manage Subscription
-            </Link>
-          </motion.div>
-
-          <div className="space-y-2">
-            <Link
-              href="/pages/businessProfile"
-              className="block text-sm text-gray-700 hover:text-orange-600 transition"
-            >
-              View Public Profile
-            </Link>
-            <Link
-              href="/"
-              className="block text-sm text-gray-700 hover:text-orange-600 transition"
-            >
-              ← Back to Home
-            </Link>
-          </div>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-8">
@@ -395,13 +308,23 @@ export default function BusinessAnalysis() {
                 <option value="1year">Last Year</option>
               </select>
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                <svg
+                  className="w-5 h-5 text-orange-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </div>
             </motion.div>
-            
-            <motion.button 
+
+            <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="px-6 py-3 bg-gradient-to-r from-[#1f1f1f] to-gray-800 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center gap-2"
@@ -446,23 +369,29 @@ export default function BusinessAnalysis() {
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl shadow-md`}>
+                  <div
+                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl shadow-md`}
+                  >
                     {stat.icon}
                   </div>
-                  <span className={`text-sm font-bold px-3 py-1 rounded-full ${
-                    stat.trend === "up" 
-                      ? "bg-green-100 text-green-700" 
-                      : "bg-red-100 text-red-700"
-                  }`}>
+                  <span
+                    className={`text-sm font-bold px-3 py-1 rounded-full ${
+                      stat.trend === "up"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
                     {stat.trend === "up" ? "↑" : "↓"} {stat.change}
                   </span>
                 </div>
-                
+
                 <p className="text-sm text-gray-600 mb-2">{stat.title}</p>
-                <p className="text-3xl font-bold text-gray-900 mb-3">{stat.value}</p>
-                
+                <p className="text-3xl font-bold text-gray-900 mb-3">
+                  {stat.value}
+                </p>
+
                 <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <motion.div 
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: "70%" }}
                     transition={{ delay: index * 0.1 + 0.5, duration: 1 }}
@@ -490,13 +419,33 @@ export default function BusinessAnalysis() {
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={eventPerformanceData}>
                   <defs>
-                    <linearGradient id="colorSignups" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="colorSignups"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="5%" stopColor="#1453A0" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#1453A0" stopOpacity={0.1} />
+                      <stop
+                        offset="95%"
+                        stopColor="#1453A0"
+                        stopOpacity={0.1}
+                      />
                     </linearGradient>
-                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="colorRevenue"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="5%" stopColor="#ff5720" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#ff5720" stopOpacity={0.1} />
+                      <stop
+                        offset="95%"
+                        stopColor="#ff5720"
+                        stopOpacity={0.1}
+                      />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -546,12 +495,12 @@ export default function BusinessAnalysis() {
                   </Pie>
                   <RechartsTooltip
                     formatter={(value, name) => [`${value}%`, name]}
-                    contentStyle={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                      backdropFilter: 'blur(10px)',
-                      borderRadius: '12px',
-                      border: '1px solid rgba(255, 152, 0, 0.2)',
-                      boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                    contentStyle={{
+                      backgroundColor: "rgba(255, 255, 255, 0.95)",
+                      backdropFilter: "blur(10px)",
+                      borderRadius: "12px",
+                      border: "1px solid rgba(255, 152, 0, 0.2)",
+                      boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
                     }}
                   />
                   <Legend />
@@ -572,9 +521,9 @@ export default function BusinessAnalysis() {
                   <XAxis dataKey="age" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
                   <RechartsTooltip content={<CustomTooltip />} />
-                  <Bar 
-                    dataKey="count" 
-                    fill="#ff5720" 
+                  <Bar
+                    dataKey="count"
+                    fill="#ff5720"
                     radius={[8, 8, 0, 0]}
                     className="hover:opacity-80 transition-opacity"
                   />
@@ -591,7 +540,7 @@ export default function BusinessAnalysis() {
               </h3>
               <div className="space-y-6">
                 {conversionData.map((stage, index) => (
-                  <motion.div 
+                  <motion.div
                     key={index}
                     whileHover={{ x: 10 }}
                     className="space-y-3 group"
@@ -601,15 +550,21 @@ export default function BusinessAnalysis() {
                         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-100 to-orange-50 flex items-center justify-center text-orange-600 font-bold shadow-sm">
                           {index + 1}
                         </div>
-                        <span className="font-medium text-gray-900">{stage.stage}</span>
+                        <span className="font-medium text-gray-900">
+                          {stage.stage}
+                        </span>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-gray-900">{stage.count}</div>
-                        <div className="text-sm text-gray-500">({stage.conversion}%)</div>
+                        <div className="text-lg font-bold text-gray-900">
+                          {stage.count}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          ({stage.conversion}%)
+                        </div>
                       </div>
                     </div>
                     <div className="relative h-3 bg-gray-100 rounded-full overflow-hidden">
-                      <motion.div 
+                      <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${stage.conversion}%` }}
                         transition={{ delay: index * 0.2, duration: 1 }}
@@ -690,11 +645,15 @@ export default function BusinessAnalysis() {
                   <span className="text-2xl">💡</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">Intelligent Insights</h3>
-                  <p className="text-gray-600">AI-powered recommendations based on your data</p>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Intelligent Insights
+                  </h3>
+                  <p className="text-gray-600">
+                    AI-powered recommendations based on your data
+                  </p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-4">
                   <h4 className="font-bold text-gray-900 text-lg flex items-center gap-2">
@@ -703,22 +662,34 @@ export default function BusinessAnalysis() {
                   </h4>
                   <ul className="space-y-4">
                     <li className="flex items-start gap-3 p-4 bg-white/50 rounded-xl border border-blue-100 shadow-sm">
-                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold">1</div>
+                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                        1
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-800">Evening events have 15% higher attendance</p>
-                        <p className="text-sm text-gray-500 mt-1">Consider scheduling more events in the evening</p>
+                        <p className="font-medium text-gray-800">
+                          Evening events have 15% higher attendance
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Consider scheduling more events in the evening
+                        </p>
                       </div>
                     </li>
                     <li className="flex items-start gap-3 p-4 bg-white/50 rounded-xl border border-blue-100 shadow-sm">
-                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold">2</div>
+                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                        2
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-800">Open House events generate 45% of all leads</p>
-                        <p className="text-sm text-gray-500 mt-1">Focus marketing efforts on Open House events</p>
+                        <p className="font-medium text-gray-800">
+                          Open House events generate 45% of all leads
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Focus marketing efforts on Open House events
+                        </p>
                       </div>
                     </li>
                   </ul>
                 </div>
-                
+
                 <div className="space-y-4">
                   <h4 className="font-bold text-gray-900 text-lg flex items-center gap-2">
                     <span className="text-orange-600">🎯</span>
@@ -726,17 +697,29 @@ export default function BusinessAnalysis() {
                   </h4>
                   <ul className="space-y-4">
                     <li className="flex items-start gap-3 p-4 bg-white/50 rounded-xl border border-orange-100 shadow-sm">
-                      <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold">1</div>
+                      <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
+                        1
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-800">Increase social media promotion by 30%</p>
-                        <p className="text-sm text-gray-500 mt-1">Projected to increase signups by 25%</p>
+                        <p className="font-medium text-gray-800">
+                          Increase social media promotion by 30%
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Projected to increase signups by 25%
+                        </p>
                       </div>
                     </li>
                     <li className="flex items-start gap-3 p-4 bg-white/50 rounded-xl border border-orange-100 shadow-sm">
-                      <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold">2</div>
+                      <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
+                        2
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-800">Target 25-34 age group more effectively</p>
-                        <p className="text-sm text-gray-500 mt-1">Highest conversion rate among all age groups</p>
+                        <p className="font-medium text-gray-800">
+                          Target 25-34 age group more effectively
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Highest conversion rate among all age groups
+                        </p>
                       </div>
                     </li>
                   </ul>
@@ -749,12 +732,29 @@ export default function BusinessAnalysis() {
         {/* Quick Stats */}
         <AnimatedChart delay={800}>
           <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-orange-200/40 p-8">
-            <h3 className="text-lg font-bold text-gray-900 mb-8">Key Performance Indicators</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-8">
+              Key Performance Indicators
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { label: "Best Day", value: "Saturday", icon: "📅", color: "#ff5720" },
-                { label: "Peak Time", value: "6-8 PM", icon: "⏰", color: "#10b981" },
-                { label: "Avg. Cost/Lead", value: "$42", icon: "💰", color: "#3b82f6" },
+                {
+                  label: "Best Day",
+                  value: "Saturday",
+                  icon: "📅",
+                  color: "#ff5720",
+                },
+                {
+                  label: "Peak Time",
+                  value: "6-8 PM",
+                  icon: "⏰",
+                  color: "#10b981",
+                },
+                {
+                  label: "Avg. Cost/Lead",
+                  value: "$42",
+                  icon: "💰",
+                  color: "#3b82f6",
+                },
                 { label: "ROI", value: "3.2x", icon: "📈", color: "#8b5cf6" },
               ].map((item, index) => (
                 <motion.div
@@ -762,14 +762,16 @@ export default function BusinessAnalysis() {
                   whileHover={{ scale: 1.05, y: -5 }}
                   className="text-center p-6 rounded-xl hover:bg-white/50 transition-all duration-300 cursor-pointer"
                 >
-                  <div 
+                  <div
                     className="w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center text-3xl shadow-lg"
                     style={{ backgroundColor: `${item.color}20` }}
                   >
                     {item.icon}
                   </div>
                   <p className="text-sm text-gray-600 mb-2">{item.label}</p>
-                  <p className="text-xl font-bold text-gray-900">{item.value}</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {item.value}
+                  </p>
                 </motion.div>
               ))}
             </div>
