@@ -362,7 +362,7 @@ export default function BusinessEventsPage() {
 
       <div className="fixed bottom-6 right-6 z-50">
         <SpeechBubble
-          text="Manage your upcoming, ongoing, and completed events here. You can also create new events."
+          text="An event management system offering chronological tracking of business activities with status-based categorization, attendee analytics, and countdown timers for optimizing event lifecycle management and audience engagement."
           color="#007AFF"
         />
       </div>

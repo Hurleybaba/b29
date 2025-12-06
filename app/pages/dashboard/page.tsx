@@ -1147,7 +1147,7 @@ export default function FeedPage() {
 
         {/* Right Sidebar - Trends & Suggestions - SCROLLABLE UPDATED */}
         <div className="hidden lg:block sticky top-24 h-[calc(100vh-6rem)] overflow-y-auto no-scrollbar space-y-6 pb-32">
-          {/* Demo Widget - MOVED HERE FROM LEFT COLUMN */}
+          {/* Demo Widget - MOVED HERE FROM LEFT COLUMN
           <div className="bg-gradient-to-br from-orange-400 to-pink-500 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-full blur-2xl transform translate-x-6 -translate-y-6"></div>
             <h3 className="font-bold text-lg mb-1 relative z-10">Demo Mode</h3>
@@ -1160,7 +1160,7 @@ export default function FeedPage() {
             >
               Trigger "Near Business"
             </button>
-          </div>
+          </div> */}
 
           {/* Trending Box - ADDED MORE TAGS */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -1327,10 +1327,10 @@ export default function FeedPage() {
       {/* Helper Speech Bubble */}
       <div className="fixed bottom-10 left-10 z-50 hidden xl:block">
         <SpeechBubble
-          text="Welcome to the updated Bento Grid Feed!"
-          color="#ff5720"
-          size="sm"
-          maxWidth="max-w-[200px]"
+          text="The FeedPage component presents a professional social discovery platform featuring a modular bento-grid interface, integrated proximity-based scanning technology, and interactive media engagement tools designed to optimize user discovery and content interaction through location-aware functionality"
+          color="#800080"
+          size="md"
+          maxWidth="max-w-[400px]"
         />
       </div>
     </div>

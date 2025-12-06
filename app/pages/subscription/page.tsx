@@ -266,7 +266,7 @@ export default function SubscriptionPage() {
 
       {/* SPEECH BUBBLE */}
       <div className="fixed bottom-6 right-6 z-50">
-        <SpeechBubble text="Manage your subscription plan and billing details here." color="#007AFF" />
+        <SpeechBubble text="A subscription management interface featuring tiered pricing plans, billing cycle options, payment history tracking, and FAQ management for business account monetization and customer retention." color="#007AFF" />
       </div>
     </div>
   );
