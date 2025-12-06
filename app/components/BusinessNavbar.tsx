@@ -94,7 +94,7 @@ export default function Sidebar() {
 
         {/* ================= SIDEBAR BOTTOM ================= */}
         <div className="p-4 border-t border-orange-200/60">
-          <motion.div
+          {/* <motion.div
             whileHover={{ scale: 1.03 }}
             className="rounded-xl bg-gradient-to-br from-[#ff5720] to-orange-700 p-4 text-white shadow-lg relative overflow-hidden group mb-10"
           >
@@ -115,7 +115,7 @@ export default function Sidebar() {
             >
               Manage Subscription
             </Link>
-          </motion.div>
+          </motion.div> */}
 
           <Link href="/pages/businessProfile" className="block text-sm text-gray-700 hover:text-orange-600 mb-2">
             View Public Profile

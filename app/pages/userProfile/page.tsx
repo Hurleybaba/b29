@@ -528,7 +528,7 @@ export default function UserProfile() {
       {/* SPEECH BUBBLE */}
       <div className="fixed bottom-6 right-1 z-5000">
         <SpeechBubble
-          text="This is the User Profile page where users can manage their personal info, view saved activity, and upgrade to a business account."
+          text="A dual-purpose profile interface enabling standard users to manage personal data while providing business upgrade pathways, featuring preference settings, activity tracking, and seamless account type transitions."
           color="#007AFF"
         />
       </div>

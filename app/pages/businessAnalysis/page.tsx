@@ -779,7 +779,7 @@ export default function BusinessAnalysis() {
         {/* Speech Bubble */}
         <div className="fixed bottom-6 right-6 z-50">
           <SpeechBubble
-            text="Dive into your business analytics. View charts for event performance, audience demographics, and conversion funnels."
+            text="This dashboard provides comprehensive business intelligence with interactive data visualization, offering performance analytics, audience demographics, conversion funnel tracking, and AI-powered recommendations for strategic decision-making."
             color="#800080"
           />
         </div>
