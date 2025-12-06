@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { SpeechBubble } from "@/app/components/Chat";
+import Sidebar from "@/app/components/BusinessNavbar";
 
 // --- TYPES ---
 type BillingCycle = 'monthly' | 'yearly';
@@ -47,13 +48,6 @@ export default function SubscriptionPage() {
   // Explicitly typing this ensures you can't accidentally set it to "month" or "Yearly" (case sensitive)
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly'); 
 
-  // Data definitions (Moved out or typed inline to prevent 'implicit any' errors in strict mode)
-  const navItems: NavItem[] = [
-    { name: "Overview", href: "/pages/businessDashboard" },
-    { name: "My Events", href: "/pages/businessEvents" },
-    { name: "Analytics", href: "/pages/businessAnalysis" },
-    { name: "Settings", href: "/pages/businessSettings" },
-  ];
 
   const billingHistory: BillingHistoryItem[] = [
     { date: 'Oct 01, 2025', price: '$50.00' },
@@ -95,44 +89,7 @@ export default function SubscriptionPage() {
       )}
 
       {/* ======================= SIDEBAR ======================= */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col justify-between transition-transform duration-300 transform 
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-        md:translate-x-0 md:sticky md:top-0 md:h-screen shadow-lg md:shadow-none`}
-      >
-        <div>
-          <div className="p-6">
-            <span className="text-2xl font-extrabold text-[#ff5720]">B23 Business</span>
-          </div>
-          <nav className="mt-6 px-4 space-y-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-orange-50 hover:text-[#ff5720] rounded-lg font-medium transition-colors duration-200"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="p-4 border-t border-gray-100 space-y-4 bg-white">
-          {/* Fixed bg-linear to bg-gradient for Tailwind compatibility */}
-          <div className="rounded-xl bg-gradient-to-br from-[#ff5720] to-orange-700 p-4 text-white shadow-lg relative overflow-hidden group hover:shadow-orange-500/20 transition-all">
-            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white opacity-10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
-            <h3 className="font-black text-lg italic tracking-wider mb-1">PRO PLAN</h3>
-            <p className="text-xs text-orange-100 mb-3 font-medium">You are viewing plans</p>
-            <ul className="text-[10px] text-orange-100 mb-0 space-y-1">
-              <li className="flex items-center gap-1">✨ Upgrade anytime</li>
-            </ul>
-          </div>
-          <div className="space-y-2">
-            <Link href="/pages/businessProfile" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition">View Public Profile</Link>
-            <Link href="/" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:text-[#ff5720] font-medium transition">&larr; Back to Home</Link>
-          </div>
-        </div>
-      </aside>
+      <Sidebar/>
 
       {/* ======================= MAIN CONTENT ======================= */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">
@@ -205,7 +162,7 @@ export default function SubscriptionPage() {
                 ))}
               </ul>
               <button className="w-full py-3 px-4 rounded-xl border border-gray-300 text-gray-600 font-bold hover:border-[#ff5720] hover:text-[#ff5720] hover:bg-orange-50 transition duration-200">
-                Downgrade
+                Change Plan
               </button>
             </div>
 
