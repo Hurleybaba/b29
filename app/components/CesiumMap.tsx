@@ -1,110 +1,181 @@
-// app/components/CesiumMap.tsx
-'use client'; 
+'use client';
 
 import React, { useRef, useEffect } from 'react';
-(window as any).CESIUM_BASE_URL = '/Cesium/';
-// 1. **FIX THIS LINE:** Use the standard ES module import style.
-//    Webpack now knows 'cesium' maps to the Source folder.
-import * as Cesium from 'cesium'; 
-import type { Viewer } from 'cesium'; // Keep the type import
 
-// 2. **FIX THIS LINE:** Import the CSS from the aliased path (which is the /Source folder).
-//    The Widgets folder is directly inside the Source folder.
+/**
+ * Cesium loads workers, assets, and widgets relative to this base URL.
+ * Your webpack config copies these folders into /public/Cesium/,
+ * so this MUST match that path exactly.
+ */
+(window as any).CESIUM_BASE_URL = '/Cesium/';
+
+import * as Cesium from 'cesium';
+import type { Viewer } from 'cesium';
+
+/**
+ * Widget CSS (timeline, buttons, etc.)
+ * Even if you disable most widgets, Cesium still expects this CSS.
+ */
 import 'cesium/Build/Cesium/Widgets/widgets.css';
 
 interface CesiumMapProps {
-  kmlUrl: string; 
+  kmlUrl: string;
 }
 
 const CesiumMap: React.FC<CesiumMapProps> = ({ kmlUrl }) => {
-// ... The rest of your code remains the same ...
-// You will reference Cesium.Viewer and Cesium.KmlDataSource later
-// which now resolves correctly thanks to the 'import * as Cesium from 'cesium';'
   const cesiumContainerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<Viewer | null>(null);
 
   useEffect(() => {
+    /**
+     * Guard clause:
+     * - container must exist
+     * - viewer must NOT already exist (prevents double-init in React)
+     */
     if (!cesiumContainerRef.current || viewerRef.current) {
-      return; 
+      return;
     }
 
-    // 2. Initialize the Cesium Viewer
-    const viewerOptions = {
+    /**
+     * ================================
+     * CESIUM VIEWER OPTIONS
+     * ================================
+     *
+     * ⚠️ OPTION A EXPLANATION (IMPORTANT)
+     *
+     * We DO NOT specify an imageryProvider here.
+     *
+     * Why?
+     * - Cesium's Viewer constructor automatically injects
+     *   a safe, Ion-free OpenStreetMap imagery provider
+     * - This provider is internally tested and correctly configured
+     * - No subdomains, no templates, no silent tile failures
+     *
+     * This avoids the "blue globe" problem entirely.
+     */
+
+    const viewerOptions: Cesium.Viewer.ConstructorOptions = {
+      // UI cleanup
       animation: false,
       timeline: false,
       baseLayerPicker: false,
       geocoder: false,
       homeButton: false,
       sceneModePicker: false,
-      
-      // *** CRITICAL OVERRIDES ***
-      
-      // 1. Explicitly set a non-Cesium default imagery provider
-      imageryProvider: new Cesium.OpenStreetMapImageryProvider({
-        url : 'https://tile.openstreetmap.org/',
-        fileExtension: 'png' // Specify the file extension
-      }),
-      
-      // 2. Explicitly prevent the default terrain (often uses Ion assets)
-      terrainProvider: new Cesium.EllipsoidTerrainProvider(), // Flat globe, but safe
-      
-      // 3. Hide the credit widget entirely
-      creditContainer: document.createElement('div'), 
-      
-      // 4. Force a clean initial scene (optional, but helps with stability)
-      useDefaultRenderLoop: false, 
-    } as Cesium.Viewer.ConstructorOptions; 
 
-    const viewer = new Cesium.Viewer(cesiumContainerRef.current, viewerOptions);
-    viewer.useDefaultRenderLoop = true; // Re-enable the loop after setup
+      /**
+       * Terrain:
+       * Explicitly use EllipsoidTerrainProvider to avoid:
+       * - Cesium World Terrain
+       * - Ion authentication
+       * - Surprise network calls
+       */
+      terrainProvider: new Cesium.EllipsoidTerrainProvider(),
 
-    viewerRef.current = viewer; // Store the viewer instance
+      /**
+       * Credits:
+       * Cesium injects a credit widget by default.
+       * Replacing the container hides it completely.
+       * (Legal note: OSM attribution is still required in production.)
+       */
+      creditContainer: document.createElement('div'),
+    };
 
-    Cesium.KmlDataSource.load(kmlUrl, {
-        camera: viewer.scene.camera,
-        canvas: viewer.scene.canvas,
-    })
-    .then((kmlDataSource) => {
-        viewer.dataSources.add(kmlDataSource);
-        viewer.flyTo(kmlDataSource);
-        console.log("KML Loaded Successfully!");
-    })
-    // This .catch() is essential for handling promise rejections!
-    .catch((error) => {
-        console.error('Cesium failed to load KML data source:', error);
-        // Optionally, display a message to the user here
-    });
+    /**
+     * Create the Cesium Viewer
+     */
+    const viewer = new Cesium.Viewer(
+      cesiumContainerRef.current,
+      viewerOptions
+    );
 
-    // 3. Load the KML file
+    viewerRef.current = viewer;
+
+    /**
+     * ================================
+     * LOAD KML DATA
+     * ================================
+     *
+     * KML loading is async and returns a DataSource.
+     * Cesium does NOT auto-add it to the viewer.
+     */
     const loadKML = async () => {
       try {
         const kmlDataSource = await Cesium.KmlDataSource.load(kmlUrl, {
           camera: viewer.scene.camera,
           canvas: viewer.scene.canvas,
         });
+
         viewer.dataSources.add(kmlDataSource);
-        viewer.flyTo(kmlDataSource);
+
+        /**
+         * ================================
+         * FORCE BOUNDARY-ONLY RENDERING
+         * ================================
+         */
+        const entities = kmlDataSource.entities.values;
+
+        for (const entity of entities) {
+          // If the KML feature is a Polygon
+          if (entity.polygon) {
+            // Disable the filled surface
+            entity.polygon.material = new Cesium.ColorMaterialProperty(
+              Cesium.Color.TRANSPARENT
+            );
+
+
+            // Enable and style the outline
+            entity.polygon.outline = new Cesium.ConstantProperty(true);
+
+            entity.polygon.outlineColor = new Cesium.ConstantProperty(
+              Cesium.Color.YELLOW
+            );
+
+            // NOTE:
+            // outlineWidth is largely ignored by WebGL, but still typed correctly
+            entity.polygon.outlineWidth = new Cesium.ConstantProperty(2);
+
+            // Clamp polygon to the ellipsoid (ground)
+            entity.polygon.height = new Cesium.ConstantProperty(0);
+          }
+        }
+
+        await viewer.flyTo(kmlDataSource);
+        console.log('KML loaded with boundary-only styling');
       } catch (error) {
-        console.error('Error loading KML data source:', error);
+        console.error('Failed to load KML:', error);
       }
     };
 
     loadKML();
 
-    // 4. Cleanup function: Destroys the viewer when the component unmounts
+    /**
+     * ================================
+     * CLEANUP
+     * ================================
+     *
+     * Cesium allocates:
+     * - WebGL context
+     * - Workers
+     * - Event listeners
+     *
+     * Failing to destroy the viewer WILL leak memory.
+     */
     return () => {
       if (viewerRef.current) {
         viewerRef.current.destroy();
         viewerRef.current = null;
       }
     };
-  }, [kmlUrl]); // Re-run effect only if kmlUrl changes
+  }, [kmlUrl]);
 
-  // 5. Render the container for the Cesium Viewer
-  // Ensure it has width and height via CSS!
+  /**
+   * Cesium renders into this div.
+   * Width and height MUST be non-zero.
+   */
   return (
-    <div 
-      ref={cesiumContainerRef} 
+    <div
+      ref={cesiumContainerRef}
       style={{ width: '100%', height: '100vh' }}
     />
   );
